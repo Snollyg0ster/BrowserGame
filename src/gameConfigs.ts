@@ -1,3 +1,3 @@
 export default {
-    size: [700, 400] as [number, number]
+    size: [700, 700] as [number, number]
 };

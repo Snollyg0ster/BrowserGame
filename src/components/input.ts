@@ -1,6 +1,6 @@
-const gameInput = (callback: (typed: [string | null, string | null]) => void) => {
+const gameInput = (callback: (typed: [string, null] | [null, string]) => any) => {
   document.addEventListener('keydown', (key) => {
-    callback([key.code, key.code]);
+    callback([key.code, null]);
   });
   document.addEventListener('keyup', (key) => {
     callback([null, key.code]);

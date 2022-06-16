@@ -6,18 +6,15 @@ import game from './gameConfigs';
 const left = ['KeyA', 'ArrowLeft'];
 const right = ['KeyD', 'ArrowRight'];
 const shootKey = 'Space';
-let pressed: string | null = null;
-let last: string | null = null;
-gameInput(([p, l]) => { pressed = p; last = l; });
+let pressed: Record<string, boolean> = {};
+gameInput(([keyDown, keyUp]) => keyDown ? (pressed[keyDown] = true) : (delete pressed[keyUp!]));
 
 const gameIteration = (ctx: CanvasRenderingContext2D, deltaTime: number, tuple: Tuple, battlefield: Battlefield) => {
   ctx?.clearRect(0, 0, ...game.size);
 
-  if (pressed) {
-    right.includes(pressed) && tuple.right(deltaTime);
-    left.includes(pressed) && tuple.left(deltaTime);
-    pressed === shootKey && tuple.shoot();
-  }
+  right.some(key => pressed[key]) && tuple.right(deltaTime);
+  left.some(key => pressed[key]) && tuple.left(deltaTime);
+  pressed[shootKey] && tuple.shoot();
 
   tuple.draw(ctx);
   battlefield.update(ctx, deltaTime);
