@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
 
 class Bullet {
-	private width = 10;
-	private height = 25;
+	private width = 5;
+	private height = 15;
 	private x = 0;
 	private y = 0;
 	color: CSSProperties['color'] = 'blue';

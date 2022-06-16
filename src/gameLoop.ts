@@ -1,22 +1,26 @@
 import Battlefield from './components/battlefield';
 import gameInput from './components/input';
-import Tuple from './components/tuple';
+import SpaceShip from './components/Ship';
 import game from './gameConfigs';
 
 const left = ['KeyA', 'ArrowLeft'];
 const right = ['KeyD', 'ArrowRight'];
+const up = ['KeyW', 'ArrowUp'];
+const down = ['KeyS', 'ArrowDown'];
 const shootKey = 'Space';
 let pressed: Record<string, boolean> = {};
 gameInput(([keyDown, keyUp]) => keyDown ? (pressed[keyDown] = true) : (delete pressed[keyUp!]));
 
-const gameIteration = (ctx: CanvasRenderingContext2D, deltaTime: number, tuple: Tuple, battlefield: Battlefield) => {
+const gameIteration = (ctx: CanvasRenderingContext2D, deltaTime: number, ship: SpaceShip, battlefield: Battlefield) => {
   ctx?.clearRect(0, 0, ...game.size);
 
-  right.some(key => pressed[key]) && tuple.right(deltaTime);
-  left.some(key => pressed[key]) && tuple.left(deltaTime);
-  pressed[shootKey] && tuple.shoot();
+  right.some(key => pressed[key]) && ship.right(deltaTime);
+  left.some(key => pressed[key]) && ship.left(deltaTime);
+  up.some(key => pressed[key]) && ship.up(deltaTime);
+  down.some(key => pressed[key]) && ship.down(deltaTime);
+  pressed[shootKey] && ship.shoot();
 
-  tuple.draw(ctx);
+  ship.draw(ctx);
   battlefield.update(ctx, deltaTime);
 };
 
@@ -27,7 +31,7 @@ const drawGame = (canvas: HTMLCanvasElement) => {
 
   if (ctx) {
     const battlefield = new Battlefield();
-    const tuple = new Tuple(...game.size, 50, 50, battlefield);
+    const tuple = new SpaceShip(...game.size, 50, 50, battlefield);
 
     const gameLoop = (time: number) => {
       gameIteration(ctx, time - prevTime, tuple, battlefield);
