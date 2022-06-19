@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { randomRgbaString } from "./utils";
 
 class Bullet {
 	private width = 5;
@@ -11,9 +12,11 @@ class Bullet {
 		x: number,
 		y: number,
 		private speed: number,
+		color: string = 'blue'
 	) {
 		this.x = x - this.width / 2;
 		this.y = y
+		this.color = color;
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {

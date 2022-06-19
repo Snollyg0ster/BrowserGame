@@ -1,6 +1,6 @@
 import Battlefield from './components/battlefield';
 import gameInput from './components/input';
-import SpaceShip from './components/Ship';
+import SpaceShip from './components/ship';
 import game from './gameConfigs';
 
 const left = ['KeyA', 'ArrowLeft'];
@@ -30,8 +30,8 @@ const drawGame = (canvas: HTMLCanvasElement) => {
   let prevTime = 0;
 
   if (ctx) {
-    const battlefield = new Battlefield();
-    const tuple = new SpaceShip(...game.size, 50, 50, battlefield);
+    const battlefield = new Battlefield({ atackPeriods: [[3, 5], [11]] });
+    const tuple = new SpaceShip(...game.size, 50, 63, battlefield);
 
     const gameLoop = (time: number) => {
       gameIteration(ctx, time - prevTime, tuple, battlefield);

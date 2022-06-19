@@ -1,13 +1,14 @@
 import Battlefield from "./battlefield";
-import Bullet from "./bullet";
+import Gun from "./gun";
+import ShipImage from "../assets/img/ship.png";
 
 class SpaceShip {
   bottomPadding: number;
   position: { x: number; y: number; };
   speed = 250;
   pitchSpeed = 320;
-  rechargeSpeed = 0.2;
-  lastShot = 0;
+  gun = new Gun(this.battlefield, 0.1);
+  doubleGun = true;
 
   constructor(
     private gWidth: number,
@@ -25,8 +26,9 @@ class SpaceShip {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    const image = new Image();
+    image.src = ShipImage;
+    ctx.drawImage(image, 73, 80, image.width - 130, image.height - 200, this.position.x, this.position.y, this.width, this.height);
   }
 
   right(deltaTime: number) {
@@ -54,15 +56,10 @@ class SpaceShip {
   }
 
   shoot() {
-    const nowtime = performance.now();
-    if ((nowtime - this.lastShot) / 1000 >= this.rechargeSpeed) this.lastShot = nowtime;
-    else return;
-    const bullet = new Bullet(this.position.x + this.width / 4, this.position.y, 700);
-    const bullet2 = new Bullet(this.position.x + this.width * 0.75, this.position.y, 700);
-    bullet.upToSelfHeight();
-    bullet2.upToSelfHeight();
-    this.battlefield.addBullet(bullet)
-    this.battlefield.addBullet(bullet2)
+    this.doubleGun
+      ? this.gun.doubleShoot(this.position.x, this.width, this.position.y)
+      : this.gun.shoot(this.position.x + this.width / 2, this.position.y)
+    this.doubleGun = !this.doubleGun
   }
 }
 
