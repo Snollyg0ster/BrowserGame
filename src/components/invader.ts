@@ -8,6 +8,7 @@ class Invader {
   color: CSSProperties['color'] = 'blue';
 
   constructor(
+    private gHeight: number,
     x: number,
     y: number,
     private speed: number,
@@ -26,7 +27,7 @@ class Invader {
   fly(deltaTime: number) {
     const verticalPosition = this.y + this.speed / 1000 * deltaTime;
     this.y = verticalPosition;
-    if (verticalPosition < 0) return null;
+    if (verticalPosition > this.gHeight) return null;
     return this;
   }
 }

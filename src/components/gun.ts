@@ -4,8 +4,8 @@ import { randomRgbaString } from "./utils";
 
 class Gun {
   rechargeSpeed: number = 0.2;
-  lastShot = 0;
-  defaultSpeed = 1000;
+  private lastShot = 0;
+  private defaultSpeed = 1000;
 
   constructor(private battlefield: Battlefield, rechargeSpeed?: number) {
     if (rechargeSpeed)

@@ -1,6 +1,5 @@
 import Battlefield from "./battlefield";
 import Gun from "./gun";
-import ShipImage from "../assets/img/ship.png";
 
 class SpaceShip {
   bottomPadding: number;
@@ -9,6 +8,7 @@ class SpaceShip {
   pitchSpeed = 320;
   gun = new Gun(this.battlefield, 0.1);
   doubleGun = true;
+  image = new Image();
 
   constructor(
     private gWidth: number,
@@ -25,10 +25,15 @@ class SpaceShip {
     };
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  addImage(source: string) {
     const image = new Image();
-    image.src = ShipImage;
-    ctx.drawImage(image, 73, 80, image.width - 130, image.height - 200, this.position.x, this.position.y, this.width, this.height);
+    image.src = source;
+    this.image = image;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(this.image, 73, 80, this.image.width - 130, this.image.height - 200,
+      this.position.x, this.position.y, this.width, this.height);
   }
 
   right(deltaTime: number) {
