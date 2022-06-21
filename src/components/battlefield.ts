@@ -7,10 +7,12 @@ const secondsFromStart = (start: number, current: number) => Math.round((current
 const findTopInvader = (invaders: Invader[]) => invaders
   .reduce((topInvader, invader) => invader.position.y - invader.height < topInvader.position.y - topInvader.height ? invader : topInvader);
 const getChunkIndex = (x: number, chunkWidth: number) => ~~(x / chunkWidth);
+const isEntityExist = (entity: { hp: number, deleted: boolean }) => !entity.deleted && entity.hp > 0
 
 class Battlefield {
-  private start = 0;
-  private gameSec = -1;
+  private startTime = 0;
+  private prevGameSec = -1;
+  private gameSec = 0;
   private bullets: Bullet[] = [];
 
   private invaders: Invader[] = [];
@@ -35,11 +37,11 @@ class Battlefield {
     this.bullets = [...this.bullets, bullet];
   }
 
-  addInvader(invader: Invader) {
+  private addInvader(invader: Invader) {
     this.invaders = [...this.invaders, invader]
   }
 
-  addToChunks(invader: Invader) {
+  private addToChunks(invader: Invader) {
     const firtsChunkIndex = getChunkIndex(invader.position.x, this.chunkWidth);
     this.atackChunks[firtsChunkIndex]
       ? this.atackChunks[firtsChunkIndex].push(invader)
@@ -52,60 +54,58 @@ class Battlefield {
     }
   }
 
-  chunksGarbageCollector() {
+  private chunksGarbageCollector() {
     Promise.resolve().then(() => {
       this.atackChunks = Object.entries(this.atackChunks)
         .reduce((chunks, [key, invaders]) => ({
           ...chunks,
-          [key]: invaders.filter(invader => !invader.deleted && invader.hp > 0)
+          [key]: invaders.filter(invader => isEntityExist(invader))
         }), {}) as Battlefield['atackChunks']
     })
   }
 
-  isAtackGoing(time: number) {
-    const fromStart = secondsFromStart(this.start, time);
-    if (fromStart !== this.gameSec) {
+  private isAtackGoing() {
+    const { gameSec, prevGameSec, atackPeriods } = this;
+    if (gameSec !== prevGameSec) {
       while (true) {
-        if (!this.atackPeriods.length) {
+        if (!atackPeriods.length) {
           this.isAtacked = true;
           break;
         }
-        const period = this.atackPeriods[this.currentPeriod];
-        if (!period || fromStart < period[0]) {
+        const period = atackPeriods[this.currentPeriod];
+        if (!period || gameSec < period[0]) {
           this.isAtacked = false;
           break;
         };
-        if (period[0] <= fromStart && (!period[1] || period[1] >= fromStart)) {
+        if (period[0] <= gameSec && (!period[1] || period[1] >= gameSec)) {
           this.isAtacked = true;
           break;
         }
         else this.currentPeriod += 1;
       }
     }
-    return fromStart;
   }
 
-  update(ctx: CanvasRenderingContext2D, time: number, deltaTime: number) {
-    const fromStart = this.isAtackGoing(time);
-    console.log(this.isAtacked)
-
-    if (this.isAtacked) {
-      const gap = (this.topInvader?.height || this.invadersHeight) + this.gapBetweenIvaders;
-      const topInvaderY = this.topInvader?.position.y;
-      const isFirstInvaderInPeriod = this.gameSec !== fromStart && fromStart === this.atackPeriods[this.currentPeriod][0];
-      this.gameSec = fromStart;
-      if (isFirstInvaderInPeriod || topInvaderY && topInvaderY >= gap) {
-        const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
-        const newInvader = new Invader(this.gHeight, this.invadersSpeed);
-        const x = Math.round(Math.random() * (this.gWidth - newInvader.size.width));
-        newInvader.setPosition(x, y);
-        this.addInvader(newInvader);
-        this.addToChunks(newInvader);
-        this.chunksGarbageCollector()
-        this.topInvader = findTopInvader(this.invaders);
-      }
+  private calculateNewInvader() {
+    if (!this.isAtacked) return;
+    const gap = (this.topInvader?.height || this.invadersHeight) + this.gapBetweenIvaders;
+    const topInvaderY = this.topInvader?.position.y;
+    const isFirstInvaderInPeriod = this.prevGameSec !== this.gameSec && this.gameSec === this.atackPeriods[this.currentPeriod][0];
+    this.prevGameSec = this.gameSec;
+    if (isFirstInvaderInPeriod || topInvaderY && topInvaderY >= gap) {
+      const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
+      const newInvader = new Invader(this.gHeight, this.invadersSpeed);
+      const x = Math.round(Math.random() * (this.gWidth - newInvader.size.width));
+      newInvader.setPosition(x, y);
+      this.addInvader(newInvader);
+      this.addToChunks(newInvader);
+      this.chunksGarbageCollector()
+      this.topInvader = findTopInvader(this.invaders);
     }
 
+  }
+
+  private updateBullets(ctx: CanvasRenderingContext2D, deltaTime: number) {
     const updatedBullets = this.bullets.filter(bullet => {
       if (bullet.deleted) return false;
       bullet.fly(deltaTime);
@@ -122,11 +122,21 @@ class Battlefield {
     }) as Bullet[];
     updatedBullets.forEach(bullet => bullet.draw(ctx))
     this.bullets = updatedBullets;
+  }
 
+  private updateInvaders(ctx: CanvasRenderingContext2D, deltaTime: number) {
     const updatedInvaders = this.invaders.map(invader => invader.fly(deltaTime))
-      .filter(invader => !invader.deleted && invader.hp > 0) as Invader[];
+      .filter(invader => isEntityExist(invader)) as Invader[];
     updatedInvaders.forEach(invader => invader.draw(ctx))
     this.invaders = updatedInvaders;
+  }
+
+  update(ctx: CanvasRenderingContext2D, time: number, deltaTime: number) {
+    this.gameSec = secondsFromStart(this.startTime, time);
+    this.isAtackGoing();
+    this.calculateNewInvader();
+    this.updateBullets(ctx, deltaTime);
+    this.updateInvaders(ctx, deltaTime);
   }
 }
 
