@@ -5,7 +5,7 @@ import SpaceShip from './components/ship';
 import game from './gameConfigs';
 import shipImage from "./assets/img/ship.png";
 
-const gameLevels: BattleFieldProps['atackPeriods'] = [[4, 8], [15, 18], [22]];
+const gameLevels: BattleFieldProps['atackPeriods'] = [[0, 5], [7]];
 
 class Game {
   private input = new GameInput();

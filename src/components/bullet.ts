@@ -19,6 +19,15 @@ class Bullet {
 		this.color = color;
 	}
 
+	get rect() {
+		return {
+			width: this.width,
+			height: this.height,
+			x: this.x,
+			y: this.y,
+		}
+	}
+
 	draw(ctx: CanvasRenderingContext2D) {
 		ctx.fillStyle = this.color || 'blue';
 		ctx.fillRect(this.x, this.y, this.width, this.height);

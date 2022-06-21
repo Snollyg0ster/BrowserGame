@@ -1,3 +1,5 @@
+import { Rect } from "./models";
+
 export type RGB = [number, number, number];
 
 export const randomRGB = (minIntensity: number, maxIntensity: number) => {
@@ -15,3 +17,8 @@ export const rgbToRgbaString = (color: number[], alpha = 255) =>
     color.length > 2 ? `rgba(${color.slice(0, 4).join(', ')}, ${alpha})` : null;
 
 export const randomRgbaString = (minIntensity: number, maxIntensity: number, alpha = 255) => rgbToRgbaString(randomRGB(minIntensity, maxIntensity), alpha)
+
+export const rectCollision = (rect1: Rect, rect2: Rect) => rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.height + rect1.y > rect2.y

@@ -14,6 +14,7 @@ class Battlefield {
   private lastWaweTime = 0;
   private invaders: Invader[] = [];
   private atackChunks: Record<number, Invader[]> = {};
+  private chunkWidth = 100;
   private topInvader: Invader | null = null;
   private gapBetweenIvaders = 50;
   private invadersSpeed = 100;
@@ -21,7 +22,7 @@ class Battlefield {
   private atackIntensity = 1;
   private currentPeriod = 0;
   private atackPeriods: ([number, number] | [number])[] = [];
-  private isAtacked = false
+  private isAtacked = false;
 
   constructor(private gWidth: number, private gHeight: number, options?: BattleFieldProps) {
     const { atackIntensity, atackPeriods } = options || {};
@@ -35,6 +36,29 @@ class Battlefield {
 
   addInvader(invader: Invader) {
     this.invaders = [...this.invaders, invader]
+  }
+
+  addToChunks(invader: Invader) {
+    const firtsChunkIndex = ~~(invader.position.x / this.chunkWidth);
+    this.atackChunks[firtsChunkIndex]
+      ? this.atackChunks[firtsChunkIndex].push(invader)
+      : (this.atackChunks[firtsChunkIndex] = [invader]);
+    const secondChunkIndex = ~~((invader.position.x + invader.size.width) / this.chunkWidth);
+    if (secondChunkIndex !== firtsChunkIndex) {
+      this.atackChunks[secondChunkIndex]
+        ? this.atackChunks[secondChunkIndex].push(invader)
+        : (this.atackChunks[secondChunkIndex] = [invader]);
+    }
+  }
+
+  chunksGarbageCollector() {
+    Promise.resolve().then(() => {
+      this.atackChunks = Object.entries(this.atackChunks)
+        .reduce((chunks, [key, invaders]) => ({
+          ...chunks,
+          [key]: invaders.filter(invader => !invader.deleted)
+        }), {}) as Battlefield['atackChunks']
+    })
   }
 
   isAtackGoing(time: number) {
@@ -71,9 +95,11 @@ class Battlefield {
       if (isFirstInvaderInPeriod || topInvaderY && topInvaderY >= gap) {
         const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
         const newInvader = new Invader(this.gHeight, this.invadersSpeed);
-        const x = newInvader.size.width / 2 + Math.round(Math.random() * (this.gWidth - newInvader.size.width))
+        const x = Math.round(Math.random() * (this.gWidth - newInvader.size.width));
         newInvader.setPosition(x, y);
         this.addInvader(newInvader);
+        this.addToChunks(newInvader);
+        this.chunksGarbageCollector()
         this.topInvader = findTopInvader(this.invaders);
         this.lastWaweTime = fromStart;
       }
@@ -83,7 +109,8 @@ class Battlefield {
     updatedBullets.forEach(bullet => bullet.draw(ctx))
     this.bullets = updatedBullets;
 
-    const updatedInvaders = this.invaders.map(invader => invader.fly(deltaTime)).filter(Boolean) as Invader[];
+    const updatedInvaders = this.invaders.map(invader => invader.fly(deltaTime))
+      .filter(invader => !invader.deleted) as Invader[];
     updatedInvaders.forEach(invader => invader.draw(ctx))
     this.invaders = updatedInvaders;
   }

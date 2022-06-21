@@ -5,6 +5,8 @@ class Invader {
   readonly height = Math.random() > 0.6 ? 150 : 30;
   private x = 0;
   private y = 0;
+  private hp = 5;
+  private garbage = false;
   color: CSSProperties['color'] = 'blue';
 
   constructor(
@@ -23,8 +25,12 @@ class Invader {
     return { width: this.width, height: this.height };
   }
 
+  get deleted() {
+    return this.garbage;
+  }
+
   setPosition(x: number, y: number) {
-    this.x = x - this.width / 2;
+    this.x = x;
     this.y = y
   }
 
@@ -35,13 +41,13 @@ class Invader {
     ctx.font = "14px serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(this.y.toFixed(1), this.x + this.width / 2, this.y - this.height / 2, 30)
+    ctx.fillText(this.hp.toString(), this.x + this.width / 2, this.y - this.height / 2, 30)
   }
 
   fly(deltaTime: number) {
     const verticalPosition = this.y + this.speed / 1000 * deltaTime;
     this.y = verticalPosition;
-    if (verticalPosition - this.height > this.gHeight) return null;
+    if (verticalPosition - this.height > this.gHeight) this.garbage = true;
     return this;
   }
 }
