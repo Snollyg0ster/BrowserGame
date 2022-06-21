@@ -1,15 +1,17 @@
 import { useEffect, useRef } from "react";
 import gameConfigs from './gameConfigs';
-import drawGame from "./gameLoop";
+import Game from "./gameLoop";
 
 const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
-    let game: ReturnType<typeof drawGame> | null = null
+    let game: Game | null = null
 
     if (canvasRef.current) {
-      game = drawGame(canvasRef.current);
+      const ctx = canvasRef.current?.getContext('2d');
+      if (!ctx) return;
+      game = new Game(ctx);
     }
 
     return () => game?.stop();

@@ -5,46 +5,63 @@ import SpaceShip from './components/ship';
 import game from './gameConfigs';
 import shipImage from "./assets/img/ship.png";
 
-const gameLevels: BattleFieldProps['atackPeriods'] = [[3, 12], [18, 22], [24]];
+const gameLevels: BattleFieldProps['atackPeriods'] = [[4, 8], [15, 18], [22]];
 
-const gameIteration = (ctx: CanvasRenderingContext2D, deltaTime: number, input: GameInput, ship: SpaceShip, battlefield: Battlefield) => {
-  ctx?.clearRect(0, 0, ...game.size);
-  const pressed = input.getPressed();
+class Game {
+  private input = new GameInput();
+  private running = true;
+  private prevTime = 0;
+  private pressed: ReturnType<GameInput['getPressed']>;
+  private paused = false;
+  private delay = 0;
+  private startPauseTime = 0;
 
-  pressed.right && ship.right(deltaTime);
-  pressed.left && ship.left(deltaTime);
-  pressed.up && ship.up(deltaTime);
-  pressed.down && ship.down(deltaTime);
-  pressed.shootKey && ship.shoot();
-
-  battlefield.update(ctx, deltaTime);
-  ship.draw(ctx);
-};
-
-const drawGame = (canvas: HTMLCanvasElement) => {
-  const ctx = canvas.getContext('2d');
-  const input = new GameInput();
-  let running = true;
-  let prevTime = 0;
-
-  if (ctx) {
+  constructor(ctx: CanvasRenderingContext2D) {
     const battlefield = new Battlefield(...game.size, { atackPeriods: gameLevels });
     const ship = new SpaceShip(...game.size, 50, 63, battlefield);
     ship.addImage(shipImage)
 
+    this.pressed = this.input.getPressed();
+
     const gameLoop = (time: number) => {
-      gameIteration(ctx, time - prevTime, input, ship, battlefield);
-      prevTime = time;
-      running && window.requestAnimationFrame(gameLoop);
+      this.pressed = this.input.getPressed();
+      if (!this.pressed.pause) {
+        if (this.paused) {
+          this.delay += time - this.startPauseTime;
+          this.paused = false;
+        }
+        const gameTime = time - this.delay;
+        this.gameIteration(ctx, gameTime, time - this.prevTime, ship, battlefield);
+      }
+      else {
+        if (!this.paused) {
+          this.startPauseTime = time
+          this.paused = true;
+        }
+      }
+      this.prevTime = time;
+      this.running && window.requestAnimationFrame(gameLoop);
     };
     gameLoop(0);
   }
 
-  const stop = () => {
-    running = false;
+  gameIteration = (ctx: CanvasRenderingContext2D, time: number, deltaTime: number, ship: SpaceShip, battlefield: Battlefield) => {
+    ctx?.clearRect(0, 0, ...game.size);
+
+    this.pressed.right && ship.right(deltaTime);
+    this.pressed.left && ship.left(deltaTime);
+    this.pressed.up && ship.up(deltaTime);
+    this.pressed.down && ship.down(deltaTime);
+    this.pressed.shootKey && ship.shoot();
+
+    battlefield.update(ctx, time, deltaTime);
+    ship.draw(ctx);
+  };
+
+  stop() {
+    this.running = false;
     document.removeEventListener('onKeyDown', () => { });
   }
-  return { stop };
 };
 
-export default drawGame;
+export default Game;

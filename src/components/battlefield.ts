@@ -3,24 +3,30 @@ import Invader from "./invader";
 import { BattleFieldProps } from "./models";
 
 const secondsFromStart = (start: number, current: number) => Math.round((current - start) / 1000)
+const findTopInvader = (invaders: Invader[]) => invaders
+  .reduce((topInvader, invader) => invader.position.y + invader.height < topInvader.position.y + topInvader.height ? invader : topInvader)
 
 class Battlefield {
   private start = 0;
-  private gameSec = 0;
+  private gameSec = -1;
   private bullets: Bullet[] = [];
+
+  private lastWaweTime = 0;
   private invaders: Invader[] = [];
+  private atackChunks: Record<number, Invader[]> = {};
+  private topInvader: Invader | null = null;
+  private gapBetweenIvaders = 50;
   private invadersSpeed = 100;
   private invadersHeight = 40;
-  private gapBetweenIvaders = this.invadersHeight;
   private atackIntensity = 1;
-  private atackPeriods: ([number, number] | [number])[] = []
   private currentPeriod = 0;
+  private atackPeriods: ([number, number] | [number])[] = [];
+  private isAtacked = false
 
   constructor(private gWidth: number, private gHeight: number, options?: BattleFieldProps) {
     const { atackIntensity, atackPeriods } = options || {};
     atackIntensity && (this.atackIntensity = atackIntensity);
     atackPeriods && (this.atackPeriods = atackPeriods)
-    this.start = performance.now();
   }
 
   addBullet(bullet: Bullet) {
@@ -31,43 +37,48 @@ class Battlefield {
     this.invaders = [...this.invaders, invader]
   }
 
-  isAtackGoing() {
-    const nowtime = performance.now();
-    const fromStart = secondsFromStart(this.start, nowtime);
-    let isAtackActive = false;
+  isAtackGoing(time: number) {
+    const fromStart = secondsFromStart(this.start, time);
     if (fromStart !== this.gameSec) {
-      console.log('fromStart', fromStart)
-      this.gameSec = fromStart;
       while (true) {
         if (!this.atackPeriods.length) {
-          isAtackActive = true;
+          this.isAtacked = true;
           break;
         }
         const period = this.atackPeriods[this.currentPeriod];
-        if (!period || fromStart < period[0]) break;
+        if (!period || fromStart < period[0]) {
+          this.isAtacked = false;
+          break;
+        };
         if (period[0] <= fromStart && (!period[1] || period[1] >= fromStart)) {
-          isAtackActive = true;
+          this.isAtacked = true;
           break;
         }
         else this.currentPeriod += 1;
       }
     }
-    return [isAtackActive, fromStart] as [boolean, number];
+    return fromStart;
   }
 
-  update(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    const [isAtacked, fromStart] = this.isAtackGoing();
+  update(ctx: CanvasRenderingContext2D, time: number, deltaTime: number) {
+    const fromStart = this.isAtackGoing(time);
 
-    if (isAtacked) {
-      const interval = Math.ceil((this.invadersHeight + this.gapBetweenIvaders) / this.invadersSpeed);
-      const periodStart = this.atackPeriods[this.currentPeriod][0] || 0;
-      if ((fromStart - periodStart) / interval) {
-        const position = Math.round(Math.random() * this.gWidth)
-        this.addInvader(new Invader(this.gHeight, position, 0, this.invadersSpeed))
+    if (this.isAtacked) {
+      const gap = (this.topInvader?.height || this.invadersHeight) + this.gapBetweenIvaders;
+      const topInvaderY = this.topInvader?.position.y;
+      const isFirstInvaderInPeriod = this.gameSec !== fromStart && fromStart === this.atackPeriods[this.currentPeriod][0];
+      this.gameSec = fromStart;
+      if (isFirstInvaderInPeriod || topInvaderY && topInvaderY >= gap) {
+        const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
+        const newInvader = new Invader(this.gHeight, this.invadersSpeed);
+        const x = newInvader.size.width / 2 + Math.round(Math.random() * (this.gWidth - newInvader.size.width))
+        newInvader.setPosition(x, y)
+        this.addInvader(newInvader)
+        this.topInvader = findTopInvader(this.invaders)
+        this.lastWaweTime = fromStart;
       }
     }
 
-    // console.log('invaders', this.invaders)
     const updatedBullets = this.bullets.map(bullet => bullet.fly(deltaTime)).filter(Boolean) as Bullet[];
     updatedBullets.forEach(bullet => bullet.draw(ctx))
     this.bullets = updatedBullets;

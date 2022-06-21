@@ -2,11 +2,10 @@ import Battlefield from "./battlefield";
 import Gun from "./gun";
 
 class SpaceShip {
-  bottomPadding: number;
   position: { x: number; y: number; };
   speed = 250;
   pitchSpeed = 320;
-  gun = new Gun(this.battlefield, 0.1);
+  gun: Gun;
   doubleGun = true;
   image = new Image();
 
@@ -16,12 +15,11 @@ class SpaceShip {
     public width: number,
     public height: number,
     private battlefield: Battlefield,
-    bottomPadding?: number
   ) {
-    this.bottomPadding = bottomPadding || 0;
+    this.gun = new Gun(this.battlefield, 0.1);
     this.position = {
       x: gWidth / 2 - width / 2,
-      y: gHeight - height - this.bottomPadding,
+      y: gHeight - height,
     };
   }
 
