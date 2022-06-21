@@ -2,7 +2,7 @@ import { CSSProperties } from "react";
 
 class Invader {
   private width = 60;
-  readonly height = Math.random() > 0.6 ? 150 : 30;
+  readonly height = Math.random() > 0.9 ? 150 : 30;
   private x = 0;
   private y = 0;
   deleted = false;

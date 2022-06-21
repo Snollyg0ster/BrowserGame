@@ -92,14 +92,15 @@ class Battlefield {
     const topInvaderY = this.topInvader?.position.y;
     const isFirstInvaderInPeriod = this.prevGameSec !== this.gameSec && this.gameSec === this.atackPeriods[this.currentPeriod][0];
     this.prevGameSec = this.gameSec;
-    if (isFirstInvaderInPeriod || topInvaderY && topInvaderY >= gap) {
+    const isTopInvaderDeleted = !this.topInvader || !isEntityExist(this.topInvader)
+    if (isFirstInvaderInPeriod || topInvaderY && (topInvaderY >= gap || isTopInvaderDeleted)) {
       const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
       const newInvader = new Invader(this.gHeight, this.invadersSpeed);
       const x = Math.round(Math.random() * (this.gWidth - newInvader.size.width));
       newInvader.setPosition(x, y);
       this.addInvader(newInvader);
       this.addToChunks(newInvader);
-      this.chunksGarbageCollector()
+      this.chunksGarbageCollector();
       this.topInvader = findTopInvader(this.invaders);
     }
 
