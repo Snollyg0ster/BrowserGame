@@ -5,8 +5,8 @@ class Invader {
   readonly height = Math.random() > 0.6 ? 150 : 30;
   private x = 0;
   private y = 0;
-  private hp = 5;
-  private garbage = false;
+  deleted = false;
+  hp = this.height * this.width / 360;
   color: CSSProperties['color'] = 'blue';
 
   constructor(
@@ -25,8 +25,8 @@ class Invader {
     return { width: this.width, height: this.height };
   }
 
-  get deleted() {
-    return this.garbage;
+  get rect() {
+    return { ...this.position, ...this.size, y: this.y - this.height }
   }
 
   setPosition(x: number, y: number) {
@@ -47,7 +47,7 @@ class Invader {
   fly(deltaTime: number) {
     const verticalPosition = this.y + this.speed / 1000 * deltaTime;
     this.y = verticalPosition;
-    if (verticalPosition - this.height > this.gHeight) this.garbage = true;
+    if (verticalPosition - this.height > this.gHeight) this.deleted = true;
     return this;
   }
 }

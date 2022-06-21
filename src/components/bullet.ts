@@ -6,6 +6,8 @@ class Bullet {
 	private height = 15;
 	private x = 0;
 	private y = 0;
+	deleted = false;
+	damage = 1;
 	color: CSSProperties['color'] = 'blue';
 
 	constructor(
@@ -36,8 +38,7 @@ class Bullet {
 	fly(deltaTime: number) {
 		const verticalPosition = this.y - this.speed / 1000 * deltaTime;
 		this.y = verticalPosition;
-		if (verticalPosition < 0) return null;
-		return this;
+		if (verticalPosition < 0) this.deleted = true;
 	}
 
 	upToSelfHeight() {
