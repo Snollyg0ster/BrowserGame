@@ -4,7 +4,7 @@ import { BattleFieldProps } from "./models";
 
 const secondsFromStart = (start: number, current: number) => Math.round((current - start) / 1000)
 const findTopInvader = (invaders: Invader[]) => invaders
-  .reduce((topInvader, invader) => invader.position.y + invader.height < topInvader.position.y + topInvader.height ? invader : topInvader)
+  .reduce((topInvader, invader) => invader.position.y - invader.height < topInvader.position.y - topInvader.height ? invader : topInvader)
 
 class Battlefield {
   private start = 0;
@@ -72,9 +72,9 @@ class Battlefield {
         const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
         const newInvader = new Invader(this.gHeight, this.invadersSpeed);
         const x = newInvader.size.width / 2 + Math.round(Math.random() * (this.gWidth - newInvader.size.width))
-        newInvader.setPosition(x, y)
-        this.addInvader(newInvader)
-        this.topInvader = findTopInvader(this.invaders)
+        newInvader.setPosition(x, y);
+        this.addInvader(newInvader);
+        this.topInvader = findTopInvader(this.invaders);
         this.lastWaweTime = fromStart;
       }
     }
