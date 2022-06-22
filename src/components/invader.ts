@@ -2,11 +2,12 @@ import { CSSProperties } from "react";
 
 class Invader {
   private width = 60;
-  readonly height = Math.random() > 0.9 ? 150 : 30;
+  readonly height = Math.random() > 0.75 ? 150 : 30;
   private x = 0;
   private y = 0;
+  private maxHp = this.height * this.width / 360;
+  hp = this.maxHp;
   deleted = false;
-  hp = this.height * this.width / 360;
   color: CSSProperties['color'] = 'blue';
 
   constructor(
@@ -27,6 +28,10 @@ class Invader {
 
   get rect() {
     return { ...this.position, ...this.size, y: this.y - this.height }
+  }
+
+  get maxHP() {
+    return this.maxHp;
   }
 
   setPosition(x: number, y: number) {

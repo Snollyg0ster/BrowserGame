@@ -12,3 +12,5 @@ export type Rect = {
   width: number,
   height: number,
 } & Coord;
+
+export type UpdateScore = (value: number) => void;

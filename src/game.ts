@@ -4,11 +4,13 @@ import GameInput from './components/input';
 import SpaceShip from './components/ship';
 import game from './gameConfigs';
 import shipImage from "./assets/img/ship.png";
+import Score from './components/score';
 
-const gameLevels: BattleFieldProps['atackPeriods'] = [[0, 5], [7]];
+const gameLevels: BattleFieldProps['atackPeriods'] = [[2, 7], [10, 15], [18]];
 
 class Game {
   private input = new GameInput();
+  private score: Score = new Score(game.size[0], 30);
   private running = true;
   private prevTime = 0;
   private pressed: ReturnType<GameInput['getPressed']>;
@@ -20,6 +22,7 @@ class Game {
     const battlefield = new Battlefield(...game.size, { atackPeriods: gameLevels });
     const ship = new SpaceShip(...game.size, 50, 63, battlefield);
     ship.addImage(shipImage)
+    battlefield.addScore(this.score);
 
     this.pressed = this.input.getPressed();
 
@@ -56,6 +59,7 @@ class Game {
 
     battlefield.update(ctx, time, deltaTime);
     ship.draw(ctx);
+    this.score.draw(ctx)
   };
 
   stop() {

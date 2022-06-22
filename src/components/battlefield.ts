@@ -1,7 +1,8 @@
 import { rectCollision } from './utils';
 import Bullet from "./bullet";
 import Invader from "./invader";
-import { BattleFieldProps } from "./models";
+import { BattleFieldProps, UpdateScore } from "./models";
+import Score from './score';
 
 const secondsFromStart = (start: number, current: number) => Math.round((current - start) / 1000)
 const findTopInvader = (invaders: Invader[]) => invaders
@@ -27,6 +28,8 @@ class Battlefield {
   private atackPeriods: ([number, number] | [number])[] = [];
   private isAtacked = false;
 
+  private score: Score | null = null;
+
   constructor(private gWidth: number, private gHeight: number, options?: BattleFieldProps) {
     const { atackIntensity, atackPeriods } = options || {};
     atackIntensity && (this.atackIntensity = atackIntensity);
@@ -35,6 +38,10 @@ class Battlefield {
 
   addBullet(bullet: Bullet) {
     this.bullets = [...this.bullets, bullet];
+  }
+
+  addScore(score: Score) {
+    this.score = score;
   }
 
   private addInvader(invader: Invader) {
@@ -103,7 +110,6 @@ class Battlefield {
       this.chunksGarbageCollector();
       this.topInvader = findTopInvader(this.invaders);
     }
-
   }
 
   private updateBullets(ctx: CanvasRenderingContext2D, deltaTime: number) {
@@ -120,14 +126,20 @@ class Battlefield {
         bullet.deleted = true;
       });
       return true
-    }) as Bullet[];
+    });
     updatedBullets.forEach(bullet => bullet.draw(ctx))
     this.bullets = updatedBullets;
   }
 
   private updateInvaders(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    const updatedInvaders = this.invaders.map(invader => invader.fly(deltaTime))
-      .filter(invader => isEntityExist(invader)) as Invader[];
+    const updatedInvaders = this.invaders
+      .filter(invader => {
+        if (invader.hp <= 0) {
+          this.score && this.score.increaseScore(invader.maxHP / 2 * 1000)
+        }
+        return isEntityExist(invader)
+      })
+      .map(invader => invader.fly(deltaTime));
     updatedInvaders.forEach(invader => invader.draw(ctx))
     this.invaders = updatedInvaders;
   }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import gameConfigs from './gameConfigs';
-import Game from "./gameLoop";
+import Game from "./game";
 
 const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
