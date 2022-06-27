@@ -1,10 +1,11 @@
 import { rectCollision } from './utils';
 import Bullet from './bullet';
 import Invader from './invader';
-import { BattleFieldProps, UpdateScore } from './models';
+import { BattleFieldProps } from './models';
 import Score from './score';
 import SpaceShip from './ship';
 import HeartHealth from './heartHealth';
+import { GameContext } from '../models';
 
 const secondsFromStart = (start: number, current: number) =>
   Math.round((current - start) / 1000);
@@ -42,6 +43,7 @@ class Battlefield {
   private ship: SpaceShip | null = null;
 
   constructor(
+    private ctx: GameContext,
     private gWidth: number,
     private gHeight: number,
     options?: BattleFieldProps
@@ -61,6 +63,7 @@ class Battlefield {
 
   addScore(score: Score) {
     this.score = score;
+    this.score?.draw(this.ctx.ui);
   }
 
   addHealth(health: HeartHealth) {
@@ -70,6 +73,7 @@ class Battlefield {
   addShip(ship: SpaceShip) {
     this.ship = ship;
     this.health?.updateHealth(this.ship.health);
+    this.health?.draw(this.ctx.ui);
   }
 
   private addInvader(invader: Invader) {
@@ -164,7 +168,7 @@ class Battlefield {
           if (isShipHit) {
             this.ship.health -= bullet.damage;
             this.health?.updateHealth(this.ship.health);
-            console.log(this.ship.health);
+            this.health?.draw(this.ctx.ui);
             bullet.deleted = true;
             if (this.ship.health <= 0) {
               this.ship.killed = true;
@@ -197,7 +201,8 @@ class Battlefield {
     const updatedInvaders = this.invaders
       .filter((invader) => {
         if (invader.hp <= 0) {
-          this.score && this.score.increaseScore((invader.maxHP / 2) * 1000);
+          this.score?.increaseScore((invader.maxHP / 2) * 1000);
+          this.score?.draw(this.ctx.ui);
         }
         return isEntityExist(invader);
       })
@@ -206,12 +211,12 @@ class Battlefield {
     this.invaders = updatedInvaders;
   }
 
-  update(ctx: CanvasRenderingContext2D, time: number, deltaTime: number) {
+  update(time: number, deltaTime: number) {
     this.gameSec = secondsFromStart(this.startTime, time);
     this.isAtackGoing();
     this.calculateNewInvader();
-    this.updateBullets(ctx, deltaTime);
-    this.updateInvaders(ctx, deltaTime);
+    this.updateInvaders(this.ctx.game, deltaTime);
+    this.updateBullets(this.ctx.game, deltaTime);
   }
 }
 

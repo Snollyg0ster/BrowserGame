@@ -52,15 +52,15 @@ class Invader {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color || 'blue';
-    ctx.fillRect(this.x, this.y, this.width, -this.height);
+    ctx.fillRect(~~this.x, ~~this.y, this.width, -this.height);
     ctx.fillStyle = 'white';
     ctx.font = '14px serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(
       this.hp.toString(),
-      this.x + this.width / 2,
-      this.y - this.height / 2,
+      ~~this.x + this.width / 2,
+      ~~this.y - this.height / 2,
       30
     );
   }

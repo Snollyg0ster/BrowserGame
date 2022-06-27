@@ -1,5 +1,11 @@
+.root {
+  display: flex;
+}
+
 .gameCont {
   position: relative;
+  width: 700px;
+  height: 700px;
 }
 
 .canvas {

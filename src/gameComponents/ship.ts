@@ -9,7 +9,9 @@ class SpaceShip {
   private gun: Gun;
   private doubleGun = true;
   private image = new Image();
-  health = 9;
+  private godMode = false;
+  private defaultHealth = 9;
+  hp = this.defaultHealth;
   killed = false;
 
   constructor(
@@ -24,6 +26,18 @@ class SpaceShip {
     this.y = gHeight - height;
   }
 
+  get health() {
+    return this.hp;
+  }
+
+  set health(hp: number) {
+    if (this.godMode) {
+      this.hp = this.defaultHealth;
+    } else {
+      this.hp = hp;
+    }
+  }
+
   get rect() {
     return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
@@ -32,6 +46,11 @@ class SpaceShip {
     const image = new Image();
     image.src = source;
     this.image = image;
+  }
+
+  setInvincible(isGod: boolean) {
+    this.godMode = isGod;
+    this.hp = this.defaultHealth;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -46,8 +65,8 @@ class SpaceShip {
       80,
       this.image.width - 130,
       this.image.height - 200,
-      this.x,
-      this.y,
+      ~~this.x,
+      ~~this.y,
       this.width,
       this.height
     );

@@ -1,5 +1,9 @@
 class HeartHealth {
   private health = 0;
+  size = 15;
+  gap = 10;
+  x = 15;
+  y = 8;
 
   constructor() {}
 
@@ -40,8 +44,18 @@ class HeartHealth {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    const healthBarWidth = this.x + (this.health + 1) * (this.size + this.gap);
+    ctx.clearRect(0, 0, healthBarWidth, this.y + this.size);
+
     for (let i = 0; i < this.health; i++) {
-      this.drawHeart(ctx, 15 + i * 25, 8, 15, 15, 'red');
+      this.drawHeart(
+        ctx,
+        this.x + i * (this.size + this.gap),
+        this.y,
+        this.size,
+        this.size,
+        'red'
+      );
     }
   }
 }

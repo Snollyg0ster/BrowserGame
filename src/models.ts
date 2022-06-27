@@ -5,3 +5,12 @@ export interface Links {
     varm: string;
   };
 }
+
+export type GameContext = Record<
+  'game' | 'ui' | 'background',
+  CanvasRenderingContext2D
+>;
+
+export interface SettingsProps {
+  setInvincible: (value: boolean) => void;
+}

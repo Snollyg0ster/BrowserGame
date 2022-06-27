@@ -37,7 +37,7 @@ class Bullet {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color || 'blue';
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillRect(~~this.x, ~~this.y, this.width, this.height);
   }
 
   fly(deltaTime: number) {

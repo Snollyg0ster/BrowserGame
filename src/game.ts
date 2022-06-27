@@ -1,11 +1,12 @@
-import { BattleFieldProps } from './components/models';
-import Battlefield from './components/battlefield';
-import GameInput from './components/input';
-import SpaceShip from './components/ship';
+import { BattleFieldProps } from './gameComponents/models';
+import Battlefield from './gameComponents/battlefield';
+import GameInput from './gameComponents/input';
+import SpaceShip from './gameComponents/ship';
 import game from './gameConfigs';
 import shipImage from './assets/img/ship.png';
-import Score from './components/score';
-import HeartHealth from './components/heartHealth';
+import Score from './gameComponents/score';
+import HeartHealth from './gameComponents/heartHealth';
+import { GameContext } from './models';
 
 const gameLevels: BattleFieldProps['atackPeriods'] = [[2, 7], [10, 15], [18]];
 
@@ -22,12 +23,8 @@ class Game {
   private delay = 0;
   private startPauseTime = 0;
 
-  constructor(
-    private gameContext: CanvasRenderingContext2D,
-    private uiContext: CanvasRenderingContext2D,
-    private backgroundContext: CanvasRenderingContext2D
-  ) {
-    this.battlefield = new Battlefield(...game.size, {
+  constructor(private ctx: GameContext) {
+    this.battlefield = new Battlefield(ctx, ...game.size, {
       atackPeriods: gameLevels,
     });
     this.ship = new SpaceShip(...game.size, 50, 63, this.battlefield);
@@ -60,8 +57,12 @@ class Game {
     gameLoop(0);
   }
 
+  getSettings() {
+    return { setInvincible: this.ship.setInvincible.bind(this.ship) };
+  }
+
   gameIteration = (time: number, deltaTime: number) => {
-    this.gameContext?.clearRect(0, 0, ...game.size);
+    this.ctx.game?.clearRect(0, 0, ...game.size);
 
     this.pressed.right && this.ship.right(deltaTime);
     this.pressed.left && this.ship.left(deltaTime);
@@ -69,10 +70,8 @@ class Game {
     this.pressed.down && this.ship.down(deltaTime);
     this.pressed.shootKey && this.ship.shoot();
 
-    this.battlefield.update(this.gameContext, time, deltaTime);
-    this.ship.draw(this.gameContext);
-    this.score.draw(this.gameContext);
-    this.health.draw(this.gameContext);
+    this.battlefield.update(time, deltaTime);
+    this.ship.draw(this.ctx.game);
   };
 
   stop() {
