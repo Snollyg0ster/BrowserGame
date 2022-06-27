@@ -1,26 +1,31 @@
-import Battlefield from "./battlefield";
-import Gun from "./gun";
+import Battlefield from './battlefield';
+import Gun from './gun';
 
 class SpaceShip {
-  position: { x: number; y: number; };
-  speed = 250;
-  pitchSpeed = 320;
-  gun: Gun;
-  doubleGun = true;
-  image = new Image();
+  private x: number;
+  public y: number;
+  private speed = 250;
+  private pitchSpeed = 320;
+  private gun: Gun;
+  private doubleGun = true;
+  private image = new Image();
+  health = 9;
+  killed = false;
 
   constructor(
     private gWidth: number,
     private gHeight: number,
     public width: number,
     public height: number,
-    private battlefield: Battlefield,
+    private battlefield: Battlefield
   ) {
     this.gun = new Gun(this.battlefield, 0.1);
-    this.position = {
-      x: gWidth / 2 - width / 2,
-      y: gHeight - height,
-    };
+    this.x = gWidth / 2 - width / 2;
+    this.y = gHeight - height;
+  }
+
+  get rect() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
 
   addImage(source: string) {
@@ -30,39 +35,56 @@ class SpaceShip {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(this.image, 73, 80, this.image.width - 130, this.image.height - 200,
-      this.position.x, this.position.y, this.width, this.height);
+    if (this.killed) {
+      this.x = this.gWidth;
+      this.y = 0;
+      return;
+    }
+    ctx.drawImage(
+      this.image,
+      73,
+      80,
+      this.image.width - 130,
+      this.image.height - 200,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
   }
 
   right(deltaTime: number) {
-    let newPosition = this.position.x + this.pitchSpeed / 1000 * deltaTime;
-    if (newPosition + this.width > this.gWidth) newPosition = this.gWidth - this.width;
-    this.position.x = newPosition
+    let newPosition = this.x + (this.pitchSpeed / 1000) * deltaTime;
+    if (newPosition + this.width > this.gWidth)
+      newPosition = this.gWidth - this.width;
+    this.x = newPosition;
   }
 
   left(deltaTime: number) {
-    let newPosition = this.position.x - this.pitchSpeed / 1000 * deltaTime;
+    let newPosition = this.x - (this.pitchSpeed / 1000) * deltaTime;
     if (newPosition < 0) newPosition = 0;
-    this.position.x = newPosition;
+    this.x = newPosition;
   }
 
   up(deltaTime: number) {
-    let newPosition = this.position.y - this.speed / 1000 * deltaTime;
+    let newPosition = this.y - (this.speed / 1000) * deltaTime;
     if (newPosition < 0) newPosition = 0;
-    this.position.y = newPosition;
+    this.y = newPosition;
   }
 
   down(deltaTime: number) {
-    let newPosition = this.position.y + this.speed / 1000 * deltaTime;
-    if (newPosition + this.height > this.gHeight) newPosition = this.gHeight - this.height;
-    this.position.y = newPosition;
+    let newPosition = this.y + (this.speed / 1000) * deltaTime;
+    if (newPosition + this.height > this.gHeight)
+      newPosition = this.gHeight - this.height;
+    this.y = newPosition;
   }
 
   shoot() {
+    if (this.killed) return;
     this.doubleGun
-      ? this.gun.doubleShoot(this.position.x, this.width, this.position.y)
-      : this.gun.shoot(this.position.x + this.width / 2, this.position.y)
-    this.doubleGun = !this.doubleGun
+      ? this.gun.doubleShoot(this.x, this.width, this.y)
+      : this.gun.shoot(this.x + this.width / 2, this.y);
+    this.doubleGun = !this.doubleGun;
   }
 }
 
