@@ -22,7 +22,11 @@ class Game {
   private delay = 0;
   private startPauseTime = 0;
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  constructor(
+    private gameContext: CanvasRenderingContext2D,
+    private uiContext: CanvasRenderingContext2D,
+    private backgroundContext: CanvasRenderingContext2D
+  ) {
     this.battlefield = new Battlefield(...game.size, {
       atackPeriods: gameLevels,
     });
@@ -43,7 +47,7 @@ class Game {
           this.paused = false;
         }
         const gameTime = time - this.delay;
-        this.gameIteration(ctx, gameTime, time - this.prevTime);
+        this.gameIteration(gameTime, time - this.prevTime);
       } else {
         if (!this.paused) {
           this.startPauseTime = time;
@@ -56,12 +60,8 @@ class Game {
     gameLoop(0);
   }
 
-  gameIteration = (
-    ctx: CanvasRenderingContext2D,
-    time: number,
-    deltaTime: number
-  ) => {
-    ctx?.clearRect(0, 0, ...game.size);
+  gameIteration = (time: number, deltaTime: number) => {
+    this.gameContext?.clearRect(0, 0, ...game.size);
 
     this.pressed.right && this.ship.right(deltaTime);
     this.pressed.left && this.ship.left(deltaTime);
@@ -69,10 +69,10 @@ class Game {
     this.pressed.down && this.ship.down(deltaTime);
     this.pressed.shootKey && this.ship.shoot();
 
-    this.battlefield.update(ctx, time, deltaTime);
-    this.ship.draw(ctx);
-    this.score.draw(ctx);
-    this.health.draw(ctx);
+    this.battlefield.update(this.gameContext, time, deltaTime);
+    this.ship.draw(this.gameContext);
+    this.score.draw(this.gameContext);
+    this.health.draw(this.gameContext);
   };
 
   stop() {
