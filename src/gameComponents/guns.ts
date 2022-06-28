@@ -78,7 +78,7 @@ export class DoubleGun extends Gun {
     const bulletSpeed = this.configSpeed || speed;
     const nowtime = performance.now();
     if (skip) this.lastShot = nowtime;
-    if ((nowtime - this.lastShot) / 1000 >= this.rechargeSpeed)
+    if (!skip && (nowtime - this.lastShot) / 1000 >= this.rechargeSpeed)
       this.lastShot = nowtime;
     else return;
 

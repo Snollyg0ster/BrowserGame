@@ -56,7 +56,6 @@ export type InvaderProps = Partial<{
   width: number;
   hp: number;
   guns: GunScheme[];
-  gun: Gun;
   color: string;
 }>;
 

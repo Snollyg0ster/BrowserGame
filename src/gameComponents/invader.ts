@@ -10,10 +10,10 @@ class Invader {
   readonly height: number = 60;
   private x = 0;
   private y = 0;
-  private maxHp = (this.height * this.width) / 360;
+  private maxHp: number;
   private guns: Gun[] | null = null;
   private texture: OffscreenCanvas | null = null;
-  hp = this.maxHp;
+  hp: number;
   deleted = false;
   color: CSSProperties['color'] = 'blue';
 
@@ -23,11 +23,12 @@ class Invader {
     battlefield: Battlefield,
     options?: InvaderProps
   ) {
-    const { image, height, width, hp, gun, color, guns } = options || {};
+    const { image, height, width, hp, color, guns } = options || {};
     image && this.addTexture(...(image as [string]));
     height && (this.height = height);
     width && (this.width = width);
-    hp && (this.hp = hp);
+    this.maxHp = hp || (this.height * this.width) / 360;
+    this.hp = this.maxHp;
     this.color = color || 'blue';
 
     const defaultGun = new Gun(battlefield, 2, this.width, { enemy: true });
