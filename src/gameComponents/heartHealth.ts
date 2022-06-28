@@ -2,7 +2,7 @@ class HeartHealth {
   private health = 0;
   size = 15;
   gap = 10;
-  x = 15;
+  x = 35;
   y = 8;
 
   constructor() {}

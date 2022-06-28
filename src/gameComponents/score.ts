@@ -2,6 +2,7 @@ import { getCanvasTextSize } from './utils';
 
 class Score {
   private score = 0;
+  private marginRight = 30;
 
   constructor(private gWidth: number, private size: number) {}
 
@@ -14,7 +15,9 @@ class Score {
     const font = `${this.size / 2}px serif`;
     const scoreText = `Score: ${this.score}`;
     const scoreBarWidth =
-      (getCanvasTextSize(scoreText, scoreText)?.width || this.size * 3) + 20;
+      (getCanvasTextSize(scoreText, scoreText)?.width || this.size * 3) +
+      this.marginRight +
+      20;
 
     ctx.clearRect(
       this.gWidth - scoreBarWidth,
@@ -27,7 +30,7 @@ class Score {
     ctx.font = font;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillText(scoreText, this.gWidth, scoreBarHeight);
+    ctx.fillText(scoreText, this.gWidth - this.marginRight, scoreBarHeight);
   }
 }
 

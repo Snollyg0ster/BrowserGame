@@ -16,7 +16,7 @@ const App = () => {
 
     if (gameCanvas.current && backgroundCanvas.current && uiCanvas.current) {
       const gameContext = gameCanvas.current?.getContext('2d');
-      const backgroundContext = backgroundCanvas.current?.getContext('2d');
+      const backgroundContext = backgroundCanvas.current?.getContext('2d', { alpha: false });
       const uiContext = uiCanvas.current?.getContext('2d');
       if (!(gameContext && backgroundContext && uiContext)) return;
       game = new Game({ game: gameContext, ui: uiContext, background: backgroundContext });

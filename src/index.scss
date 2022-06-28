@@ -1,11 +1,14 @@
 .root {
   display: flex;
+  align-items: center;
 }
 
 .gameCont {
   position: relative;
   width: 700px;
   height: 700px;
+  border-radius: 36px;
+  overflow: hidden;
 }
 
 .canvas {
