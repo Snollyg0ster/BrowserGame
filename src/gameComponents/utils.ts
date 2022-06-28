@@ -1,4 +1,6 @@
-import { Rect } from './models';
+import { GunScheme, Rect } from './models';
+import gameConfig from '../gameConfigs';
+import Battlefield from './battlefield';
 
 export type RGB = [number, number, number];
 
@@ -36,3 +38,25 @@ export const getCanvasTextSize = (text: string, font: string) => {
     return ctx.measureText(text);
   }
 };
+
+export const getRandomEnemyConfig = () => {
+  const invaders = gameConfig.invaderTypes;
+  const probability = Math.random() * 100;
+  if (probability > 75) return invaders['bigInvader'];
+  if (probability <= 75) return invaders['littleInvader'];
+  return invaders['littleInvader'];
+};
+
+export const getGunsFromProps = (
+  battlefield: Battlefield,
+  width: number,
+  guns: GunScheme[]
+) =>
+  guns.map(
+    (props) =>
+      new props.gun(battlefield, props.rechargeSpeed, width, {
+        enemy: props.enemy,
+        color: props.color,
+        configSpeed: props.speed,
+      })
+  );

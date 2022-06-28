@@ -3,7 +3,7 @@ class HeartHealth {
   size = 15;
   gap = 10;
   x = 35;
-  y = 8;
+  y = 15;
 
   constructor() {}
 

@@ -15,7 +15,7 @@ const Settings = (props: Props) => {
   }
 
   return (<div>
-    <table>
+    <table className="settingsTable">
       <tbody>
         <tr onClick={godModeHandle}>
           <td><input type="checkbox" checked={godMode} /></td>

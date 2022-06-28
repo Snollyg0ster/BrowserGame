@@ -17,7 +17,7 @@ class Game {
   private gsize = game.size;
 
   private input = new GameInput();
-  private score: Score = new Score(this.gsize[0], 30);
+  private score: Score = new Score(this.gsize[0], 35);
   private battlefield: Battlefield;
   private ship: SpaceShip;
   private health: HeartHealth;

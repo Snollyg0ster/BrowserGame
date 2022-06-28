@@ -1,4 +1,4 @@
-import { rectCollision } from './utils';
+import { getRandomEnemyConfig, rectCollision } from './utils';
 import Bullet from './bullet';
 import Invader from './invader';
 import { BattleFieldProps } from './models';
@@ -145,7 +145,12 @@ class Battlefield {
       (topInvaderY && (topInvaderY >= gap || isTopInvaderDeleted))
     ) {
       const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
-      const newInvader = new Invader(this.gHeight, this.invadersSpeed, this);
+      const newInvader = new Invader(
+        this.gHeight,
+        this.invadersSpeed,
+        this,
+        getRandomEnemyConfig()
+      );
       const x = Math.round(
         Math.random() * (this.gWidth - newInvader.size.width)
       );
@@ -153,6 +158,7 @@ class Battlefield {
       this.addInvader(newInvader);
       this.addToChunks(newInvader);
       this.chunksGarbageCollector();
+
       this.topInvader = findTopInvader(this.invaders);
     }
   }

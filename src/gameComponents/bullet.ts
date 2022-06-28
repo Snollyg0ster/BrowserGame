@@ -19,11 +19,12 @@ class Bullet {
     private speed: number,
     options?: BulletProps
   ) {
-    const { color, enemy } = options || {};
+    const { color, enemy, damage } = options || {};
     this.x = x - this.width / 2;
     this.y = y;
     enemy !== undefined && (this.enemy = enemy);
     color && (this.color = color);
+    damage && (this.damage = damage);
   }
 
   get rect() {

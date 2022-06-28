@@ -1,5 +1,5 @@
 import Battlefield from './battlefield';
-import Gun from './gun';
+import Gun, { DoubleGun } from './guns';
 
 class SpaceShip {
   private x: number;
@@ -7,7 +7,8 @@ class SpaceShip {
   private speed = 250;
   private pitchSpeed = 320;
   private gun: Gun;
-  private doubleGun = true;
+  private doubleGun: DoubleGun;
+  private isDoubleGun = true;
   private image = new Image();
   private godMode = false;
   private defaultHealth = 9;
@@ -21,7 +22,8 @@ class SpaceShip {
     public height: number,
     private battlefield: Battlefield
   ) {
-    this.gun = new Gun(this.battlefield, 0.1);
+    this.gun = new Gun(this.battlefield, 0.1, this.width);
+    this.doubleGun = new DoubleGun(this.battlefield, 0.1, this.width);
     this.x = gWidth / 2 - width / 2;
     this.y = gHeight - height;
   }
@@ -100,10 +102,14 @@ class SpaceShip {
 
   shoot() {
     if (this.killed) return;
-    this.doubleGun
-      ? this.gun.doubleShoot(this.x, this.width, this.y)
-      : this.gun.shoot(this.x + this.width / 2, this.y);
-    this.doubleGun = !this.doubleGun;
+    const isDoubleShooted = this.doubleGun.shoot(this.x, this.y, {
+      skip: !this.isDoubleGun,
+    });
+    if (isDoubleShooted) this.isDoubleGun = !this.isDoubleGun;
+    const isShooted = this.gun.shoot(this.x + this.width / 2, this.y, {
+      skip: this.isDoubleGun,
+    });
+    if (isShooted) this.isDoubleGun = !this.isDoubleGun;
   }
 }
 
