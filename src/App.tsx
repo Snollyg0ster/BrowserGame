@@ -5,7 +5,7 @@ import { SettingsProps } from "./models";
 import Settings from "./components/settings";
 
 const App = () => {
-  const [settings, setSettings] = useState<SettingsProps>();
+  const [game, setGame] = useState<Game>();
 
   const gameCanvas = useRef<HTMLCanvasElement | null>(null)
   const backgroundCanvas = useRef<HTMLCanvasElement | null>(null)
@@ -20,7 +20,7 @@ const App = () => {
       const uiContext = uiCanvas.current?.getContext('2d');
       if (!(gameContext && backgroundContext && uiContext)) return;
       game = new Game({ game: gameContext, ui: uiContext, background: backgroundContext });
-      setSettings(game.getSettings());
+      setGame(game);
     }
 
     return () => game?.stop();
@@ -47,7 +47,7 @@ const App = () => {
         className="canvas ui"
       />
     </div>
-    <Settings settings={settings} />
+    <Settings settings={game?.getSettings()} />
   </div>
 }
 

@@ -1,4 +1,5 @@
 import Battlefield from './battlefield';
+import GunQueue from './multiGun';
 import Gun, { DoubleGun } from './guns';
 
 class SpaceShip {
@@ -6,9 +7,7 @@ class SpaceShip {
   public y: number;
   private speed = 250;
   private pitchSpeed = 320;
-  private gun: Gun;
-  private doubleGun: DoubleGun;
-  private isDoubleGun = true;
+  private gunQueue: GunQueue;
   private image = new Image();
   private godMode = false;
   private defaultHealth = 9;
@@ -22,8 +21,16 @@ class SpaceShip {
     public height: number,
     private battlefield: Battlefield
   ) {
-    this.gun = new Gun(this.battlefield, 0.1, this.width);
-    this.doubleGun = new DoubleGun(this.battlefield, 0.1, this.width);
+    this.gunQueue = new GunQueue(
+      {
+        gun: new Gun(this.battlefield, 0.2, this.width),
+        timeGap: 0.1,
+      },
+      {
+        gun: new DoubleGun(this.battlefield, 0.2, this.width),
+        timeGap: 0.1,
+      }
+    );
     this.x = gWidth / 2 - width / 2;
     this.y = gHeight - height;
   }
@@ -100,16 +107,9 @@ class SpaceShip {
     this.y = newPosition;
   }
 
-  shoot() {
+  shoot(time: number) {
     if (this.killed) return;
-    const isDoubleShooted = this.doubleGun.shoot(this.x, this.y, {
-      skip: !this.isDoubleGun,
-    });
-    if (isDoubleShooted) this.isDoubleGun = !this.isDoubleGun;
-    const isShooted = this.gun.shoot(this.x + this.width / 2, this.y, {
-      skip: this.isDoubleGun,
-    });
-    if (isShooted) this.isDoubleGun = !this.isDoubleGun;
+    this.gunQueue.shoot(time, this.x, this.y);
   }
 }
 

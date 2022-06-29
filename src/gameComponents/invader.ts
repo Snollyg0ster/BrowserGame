@@ -74,9 +74,9 @@ class Invader {
     this.y = y;
   }
 
-  private shoot() {
+  private shoot(time: number) {
     this.guns?.forEach((gun) =>
-      gun.shoot(gun.type === 'gun' ? this.x + this.width / 2 : this.x, this.y, {
+      gun.shoot(time, this.x, this.y, {
         elevate: false,
         speed: -300,
       })
@@ -101,11 +101,11 @@ class Invader {
     ctx.fillText(this.hp.toString(), textX, textY, 30);
   }
 
-  fly(deltaTime: number) {
+  fly(time: number, deltaTime: number) {
     const verticalPosition = this.y + (this.speed / 1000) * deltaTime;
     this.y = verticalPosition;
     if (verticalPosition - this.height > this.gHeight) this.deleted = true;
-    else this.shoot();
+    else this.shoot(time);
     return this;
   }
 }

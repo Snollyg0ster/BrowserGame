@@ -44,7 +44,6 @@ export interface GunScheme {
 export type ShootProps = Partial<{
   elevate: boolean;
   speed: number;
-  skip: boolean;
 }>;
 
 export type InvaderProps = Partial<{
@@ -61,3 +60,8 @@ export type InvaderProps = Partial<{
 }>;
 
 export type InvaderTypes = 'littleInvader' | 'bigInvader';
+
+export interface GunQueueItem {
+  gun: Gun;
+  timeGap: number;
+}

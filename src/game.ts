@@ -9,7 +9,7 @@ import HeartHealth from './gameComponents/heartHealth';
 import { GameContext } from './models';
 import Background from './gameComponents/background';
 
-const gameLevels: BattleFieldProps['atackPeriods'] = [[2, 7], [12, 15], [18]];
+const gameLevels: BattleFieldProps['atackPeriods'] = [[1, 5], [10, 15], [20]];
 
 //the speed in components is equal to the number of pixels per second
 
@@ -26,9 +26,9 @@ class Game {
   private running = true;
   private prevTime = 0;
   private pressed: ReturnType<GameInput['getPressed']>;
-  private paused = false;
   private delay = 0;
   private startPauseTime = 0;
+  paused = false;
 
   constructor(private ctx: GameContext) {
     this.battlefield = new Battlefield(ctx, ...this.gsize, {
@@ -77,7 +77,7 @@ class Game {
     this.pressed.left && this.ship.left(deltaTime);
     this.pressed.up && this.ship.up(deltaTime);
     this.pressed.down && this.ship.down(deltaTime);
-    this.pressed.shootKey && this.ship.shoot();
+    this.pressed.shootKey && this.ship.shoot(time);
 
     this.background.draw(time, deltaTime);
     this.battlefield.update(time, deltaTime);

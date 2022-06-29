@@ -6,7 +6,7 @@ import { randomRgbaString } from './utils';
 
 class Gun {
   type: string = 'gun';
-  protected lastShot = 0;
+  lastShot = 0;
   protected color: CSSProperties['color'] = undefined;
   protected enemy = false;
   protected configSpeed: number | null = null;
@@ -30,19 +30,13 @@ class Gun {
     return this;
   }
 
-  shoot(x: number, y: number, options?: ShootProps) {
-    const { speed = this.defaultSpeed, elevate = true, skip } = options || {};
+  fire(x: number, y: number, options?: ShootProps) {
+    const { speed = this.defaultSpeed, elevate = true } = options || {};
     const bulletSpeed = this.configSpeed || speed;
-    const nowtime = performance.now();
-    if (skip) this.lastShot = nowtime;
-    if (!skip && (nowtime - this.lastShot) / 1000 >= this.rechargeSpeed)
-      this.lastShot = nowtime;
-    else return;
-
     const color = this.color || randomRgbaString(150, 150);
     const bullet = new Bullet(
       this.battlefield.gSize.height,
-      x,
+      x + this.width / 2,
       y,
       bulletSpeed,
       {
@@ -52,12 +46,21 @@ class Gun {
     );
     elevate && bullet.upToSelfHeight();
     this.battlefield.addBullet(bullet);
+  }
+
+  shoot(time: number, x: number, y: number, options?: ShootProps) {
+    if (!this.lastShot || (time - this.lastShot) / 1000 >= this.rechargeSpeed)
+      this.lastShot = time;
+    else return;
+
+    this.fire(x, y, options);
+
     return 1;
   }
 }
 
 export class DoubleGun extends Gun {
-  type: string = 'gudoubleGunn';
+  type: string = 'doubleGun';
 
   constructor(
     battlefield: Battlefield,
@@ -73,15 +76,9 @@ export class DoubleGun extends Gun {
     configSpeed && (this.configSpeed = configSpeed);
   }
 
-  shoot(x1: number, y: number, options?: ShootProps) {
-    const { speed = this.defaultSpeed, skip } = options || {};
+  fire(x1: number, y: number, options?: ShootProps) {
+    const { speed = this.defaultSpeed } = options || {};
     const bulletSpeed = this.configSpeed || speed;
-    const nowtime = performance.now();
-    if (skip) this.lastShot = nowtime;
-    if (!skip && (nowtime - this.lastShot) / 1000 >= this.rechargeSpeed)
-      this.lastShot = nowtime;
-    else return;
-
     const color = this.color || randomRgbaString(150, 150);
     const bullet = new Bullet(
       this.battlefield.gSize.height,
@@ -101,7 +98,6 @@ export class DoubleGun extends Gun {
     bullet2.upToSelfHeight();
     this.battlefield.addBullet(bullet);
     this.battlefield.addBullet(bullet2);
-    return 1;
   }
 }
 

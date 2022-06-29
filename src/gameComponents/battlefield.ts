@@ -203,7 +203,11 @@ class Battlefield {
     this.bullets = updatedBullets;
   }
 
-  private updateInvaders(ctx: CanvasRenderingContext2D, deltaTime: number) {
+  private updateInvaders(
+    ctx: CanvasRenderingContext2D,
+    time: number,
+    deltaTime: number
+  ) {
     const updatedInvaders = this.invaders
       .filter((invader) => {
         if (invader.hp <= 0) {
@@ -212,7 +216,7 @@ class Battlefield {
         }
         return isEntityExist(invader);
       })
-      .map((invader) => invader.fly(deltaTime));
+      .map((invader) => invader.fly(time, deltaTime));
     updatedInvaders.forEach((invader) => invader.draw(ctx));
     this.invaders = updatedInvaders;
   }
@@ -221,7 +225,7 @@ class Battlefield {
     this.gameSec = secondsFromStart(this.startTime, time);
     this.isAtackGoing();
     this.calculateNewInvader();
-    this.updateInvaders(this.ctx.game, deltaTime);
+    this.updateInvaders(this.ctx.game, time, deltaTime);
     this.updateBullets(this.ctx.game, deltaTime);
   }
 }
