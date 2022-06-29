@@ -13,6 +13,7 @@ export default {
       hp: 5,
     },
     bigInvader: {
+      reward: 22500,
       height: 100,
       width: 100,
       image: [bigInvaderImage, 100, 100],

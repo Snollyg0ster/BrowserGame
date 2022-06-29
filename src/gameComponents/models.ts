@@ -57,6 +57,7 @@ export type InvaderProps = Partial<{
   hp: number;
   guns: GunScheme[];
   color: string;
+  reward: number;
 }>;
 
 export type InvaderTypes = 'littleInvader' | 'bigInvader';

@@ -207,7 +207,7 @@ class Battlefield {
     const updatedInvaders = this.invaders
       .filter((invader) => {
         if (invader.hp <= 0) {
-          this.score?.increaseScore((invader.maxHP / 2) * 1000);
+          this.score?.increaseScore(invader.reward);
           this.score?.draw(this.ctx.ui);
         }
         return isEntityExist(invader);
