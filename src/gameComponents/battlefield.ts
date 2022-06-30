@@ -146,6 +146,7 @@ class Battlefield {
     ) {
       const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
       const newInvader = new Invader(
+        this.ctx.game,
         this.gHeight,
         this.invadersSpeed,
         this,
@@ -217,7 +218,7 @@ class Battlefield {
         return isEntityExist(invader);
       })
       .map((invader) => invader.fly(time, deltaTime));
-    updatedInvaders.forEach((invader) => invader.draw(ctx));
+    updatedInvaders.forEach((invader) => invader.draw());
     this.invaders = updatedInvaders;
   }
 

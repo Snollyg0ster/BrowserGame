@@ -3,7 +3,7 @@ import Battlefield from './gameComponents/battlefield';
 import GameInput from './gameComponents/input';
 import SpaceShip from './gameComponents/ship';
 import game from './gameConfigs';
-import shipImage from './assets/img/ship.png';
+import shipImage from './assets/img/ship5.png';
 import Score from './gameComponents/score';
 import HeartHealth from './gameComponents/heartHealth';
 import { GameContext } from './models';
@@ -34,7 +34,7 @@ class Game {
     this.battlefield = new Battlefield(ctx, ...this.gsize, {
       atackPeriods: gameLevels,
     });
-    this.ship = new SpaceShip(...this.gsize, 50, 63, this.battlefield);
+    this.ship = new SpaceShip(...this.gsize, 52, 65, this.battlefield);
     this.health = new HeartHealth();
     this.background = new Background(ctx.background, ...this.gsize);
 

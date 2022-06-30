@@ -1,13 +1,12 @@
-import { GunProps, ShootProps } from './models';
-import { CSSProperties } from 'react';
+import { GunProps, ShootProps, Color } from './models';
 import Battlefield from './battlefield';
 import Bullet from './bullet';
 import { randomRgbaString } from './utils';
 
 class Gun {
   type: string = 'gun';
-  lastShot = 0;
-  protected color: CSSProperties['color'] = undefined;
+  protected lastShot = 0;
+  protected color: Color = undefined;
   protected enemy = false;
   protected configSpeed: number | null = null;
   defaultSpeed = 500;
@@ -25,7 +24,7 @@ class Gun {
     configSpeed && (this.configSpeed = configSpeed);
   }
 
-  setColor(color: CSSProperties['color']) {
+  setColor(color: Color) {
     this.color = color;
     return this;
   }

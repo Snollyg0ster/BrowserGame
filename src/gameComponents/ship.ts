@@ -68,17 +68,7 @@ class SpaceShip {
       this.y = 0;
       return;
     }
-    ctx.drawImage(
-      this.image,
-      73,
-      80,
-      this.image.width - 130,
-      this.image.height - 200,
-      ~~this.x,
-      ~~this.y,
-      this.width,
-      this.height
-    );
+    ctx.drawImage(this.image, ~~this.x, ~~this.y, this.width, this.height);
   }
 
   right(deltaTime: number) {
