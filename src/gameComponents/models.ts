@@ -18,6 +18,11 @@ export type Rect = {
   height: number;
 } & Coord;
 
+export interface Polygon {
+  coords: Coord[];
+  center: Coord;
+}
+
 export type UpdateScore = (value: number) => void;
 
 export type BulletProps = Partial<{

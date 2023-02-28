@@ -3,8 +3,8 @@ class GameInput {
   private right = ['KeyD', 'ArrowRight'];
   private up = ['KeyW', 'ArrowUp'];
   private down = ['KeyS', 'ArrowDown'];
-  private stop = 'KeyP';
-  private shootKey = 'Space';
+  private stop = ['KeyP', 'Escape'];
+  private shootKey = ['Space'];
   private pressed: Record<string, boolean> = {};
   private clickNum: Record<string, number> = {};
 
@@ -18,14 +18,22 @@ class GameInput {
     });
   }
 
+  private isPressed(keys: string[]) {
+    return keys.some(key => this.pressed[key]);
+  }
+
+  private getClickNum(keys: string[]) {
+    return keys.reduce((num, key) => num + (this.clickNum[key] || 0), 0);
+  }
+
   getPressed() {
     return {
-      right: this.right.some(key => this.pressed[key]),
-      left: this.left.some(key => this.pressed[key]),
-      up: this.up.some(key => this.pressed[key]),
-      down: this.down.some(key => this.pressed[key]),
-      shootKey: this.pressed[this.shootKey],
-      pause: this.clickNum[this.stop] && !!(this.clickNum[this.stop] % 2),
+      right: this.isPressed(this.right),
+      left: this.isPressed(this.left),
+      up: this.isPressed(this.up),
+      down: this.isPressed(this.down),
+      shootKey: this.isPressed(this.shootKey),
+      pause: !!(this.getClickNum(this.stop) % 2),
     }
   }
 }
