@@ -19,7 +19,7 @@ const Settings = (props: Props) => {
       <tbody>
         <tr onClick={godModeHandle}>
           <td><input type="checkbox" checked={godMode} onChange={() => { }} /></td>
-          <td ><label>God Mode</label></td>
+          <td ><label>Invincible</label></td>
         </tr>
       </tbody>
     </table>

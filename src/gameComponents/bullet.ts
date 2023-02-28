@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { BulletProps } from './models';
-import { randomRgbaString } from './utils';
+import { randomRgbaString, copyToInstance } from './utils';
 
 class Bullet {
   private width = 5;
@@ -19,12 +19,9 @@ class Bullet {
     private speed: number,
     options?: BulletProps
   ) {
-    const { color, enemy, damage } = options || {};
+    options && copyToInstance(this, options);
     this.x = x - this.width / 2;
     this.y = y;
-    enemy !== undefined && (this.enemy = enemy);
-    color && (this.color = color);
-    damage && (this.damage = damage);
   }
 
   get rect() {

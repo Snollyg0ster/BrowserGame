@@ -1,6 +1,7 @@
-import { GunScheme, Rect } from './models';
+import { GunScheme, Rect, Coord, Polygon } from './models';
 import gameConfig from '../gameConfigs';
 import Battlefield from './battlefield';
+import { NestedObjectExtractor } from './utilityTypes';
 
 export type RGB = [number, number, number];
 
@@ -60,3 +61,62 @@ export const getGunsFromProps = (
         configSpeed: props.speed,
       })
   );
+
+export const copyToInstance = <
+  Self extends object,
+  Options extends NestedObjectExtractor<Self, Options>
+>(
+  self: Self,
+  props: Options
+) => {
+  Object.assign(
+    self,
+    Object.entries(props)
+      .filter(([, value]) => value !== undefined)
+      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+  );
+};
+
+export const rotateDot = (
+  dot: Coord,
+  angle: number,
+  axis: Coord = { x: 0, y: 0 }
+) => {
+  if (!angle) return dot; //no angle, no need to rotate :)
+
+  let relativeToAxis = { x: dot.x - axis.x, y: dot.y - axis.y };
+  const { x, y } = relativeToAxis;
+
+  const rotatedX = Math.cos(angle) * x - Math.sin(angle) * y;
+  const rotatedY = Math.sin(angle) * x + Math.cos(angle) * y;
+
+  return { x: rotatedX + axis.x, y: rotatedY + axis.y };
+};
+
+export const equilateralTriangle = (
+  center: Coord,
+  size: number,
+  angle = 0
+): Polygon => {
+  const { x, y } = center;
+  const bisectorHeight = (size * Math.sqrt(3)) / 2;
+
+  const a = rotateDot({ x, y: y - bisectorHeight / 2 }, angle, center);
+  const b = rotateDot(
+    { x: x - size / 2, y: y + bisectorHeight / 2 },
+    angle,
+    center
+  );
+  const c = rotateDot(
+    { x: x + size / 2, y: y + bisectorHeight / 2 },
+    angle,
+    center
+  );
+
+  return { coords: [a, b, c], center };
+};
+
+export const rotatePolygon = (shape: Polygon, angle: number): Polygon => ({
+  ...shape,
+  coords: shape.coords.map((coord) => rotateDot(coord, angle, shape.center)),
+});

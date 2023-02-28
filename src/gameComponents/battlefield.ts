@@ -1,4 +1,4 @@
-import { getRandomEnemyConfig, rectCollision } from './utils';
+import { copyToInstance, getRandomEnemyConfig, rectCollision } from './utils';
 import Bullet from './bullet';
 import Invader from './invader';
 import { BattleFieldProps } from './models';
@@ -48,9 +48,7 @@ class Battlefield {
     private gHeight: number,
     options?: BattleFieldProps
   ) {
-    const { atackIntensity, atackPeriods } = options || {};
-    atackIntensity && (this.atackIntensity = atackIntensity);
-    atackPeriods && (this.atackPeriods = atackPeriods);
+    options && copyToInstance(this, options);
   }
 
   get gSize() {
