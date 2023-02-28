@@ -13,9 +13,9 @@ class Score {
 
   draw(ctx: CanvasRenderingContext2D) {
     const scoreBarHeight = this.size / 2;
-    const font = `${this.size / 2}px serif`;
+    const font = `${this.size / 2}px Roboto`;
     const scoreText = `Score: ${this.score}`;
-    const textWidth = getCanvasTextSize(scoreText, scoreText)?.width;
+    const textWidth = getCanvasTextSize(scoreText, font)?.width;
     const scoreBarWidth = (textWidth || this.size * 3) + this.marginRight + 30;
 
     ctx.clearRect(

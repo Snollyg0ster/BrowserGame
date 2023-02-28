@@ -7,15 +7,30 @@ class GameInput {
   private shootKey = ['Space'];
   private pressed: Record<string, boolean> = {};
   private clickNum: Record<string, number> = {};
+  stopListening: () => void;
 
   constructor() {
-    document.addEventListener('keydown', (key) => {
-      this.pressed[key.code] = true
-    });
-    document.addEventListener('keyup', (key) => {
-      delete this.pressed[key.code]
-      key.code in this.clickNum ? this.clickNum[key.code]++ : (this.clickNum[key.code] = 1);
-    });
+    const onKeyDown = this.onKeyDown.bind(this);
+    const onKeyUp = this.onKeyUp.bind(this);
+    
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+
+    this.stopListening = () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
+    }
+  }
+
+  private onKeyDown(key: string | KeyboardEvent) {
+    const code = typeof key === "string" ? key : key.code;
+    this.pressed[code] = true
+  }
+
+  private onKeyUp(key: string | KeyboardEvent) {
+    const code = typeof key === "string" ? key : key.code;
+    delete this.pressed[code]
+    code in this.clickNum ? this.clickNum[code]++ : (this.clickNum[code] = 1);
   }
 
   private isPressed(keys: string[]) {
@@ -35,6 +50,11 @@ class GameInput {
       shootKey: this.isPressed(this.shootKey),
       pause: !!(this.getClickNum(this.stop) % 2),
     }
+  }
+
+  syntheticPress(code: string) {
+    this.onKeyDown(code)
+    this.onKeyUp(code)
   }
 }
 

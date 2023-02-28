@@ -8,12 +8,18 @@ import Score from './gameComponents/score';
 import HeartHealth from './gameComponents/heartHealth';
 import { GameContext } from './models';
 import Background from './gameComponents/background';
+import { Listeners } from './utils';
 
 const gameLevels: BattleFieldProps['atackPeriods'] = [[1, 5], [10, 15], [20]];
 
 //the speed in components is equal to the number of pixels per second
 
-class Game {
+type GameListeners = {
+  onPaused: (paused: boolean) => void;
+  onTest: (wed: string, gf: boolean) => void;
+}
+
+class Game extends Listeners<GameListeners> {
   private gsize = game.size;
 
   private input = new GameInput();
@@ -28,9 +34,11 @@ class Game {
   private pressed: ReturnType<GameInput['getPressed']>;
   private delay = 0;
   private startPauseTime = 0;
-  paused = false;
+  private paused = false;
 
   constructor(private ctx: GameContext) {
+    super();
+    
     this.battlefield = new Battlefield(ctx, ...this.gsize, {
       atackPeriods: gameLevels,
     });
@@ -51,6 +59,7 @@ class Game {
         if (this.paused) {
           this.delay += time - this.startPauseTime;
           this.paused = false;
+          this.runListeners("onPaused", false);
         }
         const gameTime = time - this.delay;
         this.gameIteration(gameTime, time - this.prevTime);
@@ -58,6 +67,7 @@ class Game {
         if (!this.paused) {
           this.startPauseTime = time;
           this.paused = true;
+          this.runListeners("onPaused", true);
         }
       }
       this.prevTime = time;
@@ -86,7 +96,11 @@ class Game {
 
   stop() {
     this.running = false;
-    document.removeEventListener('onKeyDown', () => {});
+    this.input.stopListening();
+  }
+
+  togglePause() {
+    this.input.syntheticPress("Escape")
   }
 }
 
