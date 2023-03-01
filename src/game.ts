@@ -6,18 +6,13 @@ import game from './gameConfigs';
 import shipImage from './assets/img/ship5.png';
 import Score from './gameComponents/score';
 import HeartHealth from './gameComponents/heartHealth';
-import { GameContext } from './models';
+import { GameContext, GameListeners } from './models';
 import Background from './gameComponents/background';
 import { Listeners } from './utils';
 
 const gameLevels: BattleFieldProps['atackPeriods'] = [[1, 5], [10, 15], [20]];
 
 //the speed in components is equal to the number of pixels per second
-
-type GameListeners = {
-  onPaused: (paused: boolean) => void;
-  onTest: (wed: string, gf: boolean) => void;
-}
 
 class Game extends Listeners<GameListeners> {
   private gsize = game.size;
@@ -39,7 +34,7 @@ class Game extends Listeners<GameListeners> {
   constructor(private ctx: GameContext) {
     super();
     
-    this.battlefield = new Battlefield(ctx, ...this.gsize, {
+    this.battlefield = new Battlefield(this, ctx, ...this.gsize, {
       atackPeriods: gameLevels,
     });
     this.ship = new SpaceShip(...this.gsize, 52, 65, this.battlefield);

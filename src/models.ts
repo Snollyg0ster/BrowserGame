@@ -14,3 +14,8 @@ export type GameContext = Record<
 export interface SettingsProps {
   setInvincible: (value: boolean) => void;
 }
+
+export type GameListeners = {
+  onPaused: (paused: boolean) => void;
+  onKilled: () => void;
+}

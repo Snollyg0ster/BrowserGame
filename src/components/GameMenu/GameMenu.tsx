@@ -4,31 +4,47 @@ import { clsx } from '../../utils';
 interface Props {
   paused: boolean;
   togglePause?: () => void;
+  isDead: boolean;
+  restartGame: () => void;
 }
 
 const GameMenu = (props: Props) => {
-  const { paused, togglePause } = props;
+  const { paused, togglePause, isDead, restartGame } = props;
 
   const [zIndex, setZIndex] = useState(paused);
 
-  const onTransitionEnd = () => !paused && setZIndex(false);
-
   useEffect(() => {
-    paused && setZIndex(true);
-  }, [paused]);
+    isVisible && setZIndex(true);
+  }, [paused, isDead]);
+
+  const onTransitionEnd = () => !isVisible && setZIndex(false);
+
+  const isVisible = paused || isDead;
 
   return (
     <div
       onTransitionEnd={onTransitionEnd}
       style={{ zIndex: zIndex ? 3 : 0 }}
-      className={clsx('menu-container', { 'menu-container__visible': paused })}
+      className={clsx('menu-container', {
+        'menu-container__visible': isVisible,
+      })}
     >
       <div className="menu">
-        <div className="menu-title ">Game Paused</div>
+        {isDead ? (
+          <div className="menu-title ">Game Over</div>
+        ) : (
+          <div className="menu-title ">Game Paused</div>
+        )}
         <div className="buttons-container">
-          <div className="menu-button" onClick={togglePause}>
-            continue
-          </div>
+          {isDead ? (
+            <div className="menu-button" onClick={restartGame}>
+              restart
+            </div>
+          ) : (
+            <div className="menu-button" onClick={togglePause}>
+              continue
+            </div>
+          )}
         </div>
       </div>
     </div>

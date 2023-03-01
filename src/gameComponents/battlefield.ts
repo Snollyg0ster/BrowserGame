@@ -5,7 +5,8 @@ import { BattleFieldProps } from './models';
 import Score from './score';
 import SpaceShip from './ship';
 import HeartHealth from './heartHealth';
-import { GameContext } from '../models';
+import { GameContext, GameListeners } from '../models';
+import { Listeners } from '../utils';
 
 const secondsFromStart = (start: number, current: number) =>
   Math.round((current - start) / 1000);
@@ -43,6 +44,7 @@ class Battlefield {
   private ship: SpaceShip | null = null;
 
   constructor(
+    private game: Listeners<GameListeners>,
     private ctx: GameContext,
     private gWidth: number,
     private gHeight: number,
@@ -176,6 +178,7 @@ class Battlefield {
             this.health?.draw(this.ctx.ui);
             bullet.deleted = true;
             if (this.ship.health <= 0) {
+              this.game.runListeners("onKilled")
               this.ship.killed = true;
             }
           }
