@@ -36,15 +36,14 @@ const GameMenu = (props: Props) => {
           <div className="menu-title ">Game Paused</div>
         )}
         <div className="buttons-container">
-          {isDead ? (
-            <div className="menu-button" onClick={restartGame}>
-              restart
-            </div>
-          ) : (
+          {!isDead && (
             <div className="menu-button" onClick={togglePause}>
               continue
             </div>
           )}
+          <div className="menu-button" onClick={restartGame}>
+            restart
+          </div>
         </div>
       </div>
     </div>

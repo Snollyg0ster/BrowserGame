@@ -47,29 +47,31 @@ class Game extends Listeners<GameListeners> {
     this.battlefield.addShip(this.ship);
 
     this.pressed = this.input.getPressed();
+    this.input.addListener("KeyR", () => this.runListeners("onRestart"))
 
-    const gameLoop = (time: number) => {
-      this.pressed = this.input.getPressed();
-      if (!this.pressed.pause) {
-        if (this.paused) {
-          this.delay += time - this.startPauseTime;
-          this.paused = false;
-          this.runListeners("onPaused", false);
-        }
-        const gameTime = time - this.delay;
-        this.gameIteration(gameTime, time - this.prevTime);
-      } else {
-        if (!this.paused) {
-          this.startPauseTime = time;
-          this.paused = true;
-          this.runListeners("onPaused", true);
-        }
-      }
-      this.prevTime = time;
-      this.running && window.requestAnimationFrame(gameLoop);
-    };
-    gameLoop(0);
+    this.gameLoop(0);
   }
+
+  private gameLoop (time: number) {
+    this.pressed = this.input.getPressed();
+    if (!this.pressed.pause) {
+      if (this.paused) {
+        this.delay += time - this.startPauseTime;
+        this.paused = false;
+        this.runListeners("onPaused", false);
+      }
+      const gameTime = time - this.delay;
+      this.gameIteration(gameTime, time - this.prevTime);
+    } else {
+      if (!this.paused) {
+        this.startPauseTime = time;
+        this.paused = true;
+        this.runListeners("onPaused", true);
+      }
+    }
+    this.prevTime = time;
+    this.running && window.requestAnimationFrame(this.gameLoop.bind(this));
+  };
 
   getSettings() {
     return { setInvincible: this.ship.setInvincible.bind(this.ship) };

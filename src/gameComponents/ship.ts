@@ -32,7 +32,7 @@ class SpaceShip {
       }
     );
     this.x = gWidth / 2 - width / 2;
-    this.y = gHeight - height;
+    this.y = gHeight * 0.8 - height;
   }
 
   get health() {

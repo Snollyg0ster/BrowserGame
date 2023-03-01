@@ -42,10 +42,14 @@ const App = () => {
     if (game) {
       game.addListener('onPaused', setPaused);
       game.addListener('onKilled', () => setIsDead(true));
+      game.addListener("onRestart", restart)
     }
   }, [game]);
 
-  const restart = () => setIsDead(false);
+  const restart = () => {
+    setIsDead(true)
+    setTimeout(() => setIsDead(false))
+  };
 
   return (
     <>

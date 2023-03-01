@@ -1,4 +1,5 @@
-class GameInput {
+import { Listeners } from './../utils';
+class GameInput extends Listeners<Record<string, () => void>>{
   private left = ['KeyA', 'ArrowLeft'];
   private right = ['KeyD', 'ArrowRight'];
   private up = ['KeyW', 'ArrowUp'];
@@ -10,9 +11,11 @@ class GameInput {
   stopListening: () => void;
 
   constructor() {
+    super();
+
     const onKeyDown = this.onKeyDown.bind(this);
     const onKeyUp = this.onKeyUp.bind(this);
-    
+
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
@@ -31,6 +34,7 @@ class GameInput {
     const code = typeof key === "string" ? key : key.code;
     delete this.pressed[code]
     code in this.clickNum ? this.clickNum[code]++ : (this.clickNum[code] = 1);
+    this.runListeners(code);
   }
 
   private isPressed(keys: string[]) {
