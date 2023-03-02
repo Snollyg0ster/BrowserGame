@@ -53,7 +53,6 @@ class Game extends Listeners<GameListeners> {
     this.pressed = this.input.getPressed();
     this.input.addAliasClickListener("pause", () => {
       this.paused = !this.paused;
-      // this.runListeners("onPaused", this.paused);
     })
     this.input.addAliasClickListener("restart", () => this.runListeners("onRestart"))
 
@@ -66,7 +65,7 @@ class Game extends Listeners<GameListeners> {
       if (this.gamePaused) {
         this.delay += time - this.startPauseTime;
         this.gamePaused = false;
-        this.runListeners("onPaused", false);
+        this.runListeners("onPaused", false, this.score.scoreValue);
       }
       const gameTime = time - this.delay;
       this.gameIteration(gameTime, time - this.prevTime);
@@ -74,12 +73,16 @@ class Game extends Listeners<GameListeners> {
       if (!this.gamePaused) {
         this.startPauseTime = time;
         this.gamePaused = true;
-        this.runListeners("onPaused", true);
+        this.runListeners("onPaused", true, this.score.scoreValue);
       }
     }
     this.prevTime = time;
     this.running && window.requestAnimationFrame(this.gameLoop.bind(this));
   };
+
+  getScore() {
+    return this.score.scoreValue;
+  }
 
   getSettings() {
     return { setInvincible: this.ship.setInvincible.bind(this.ship) };

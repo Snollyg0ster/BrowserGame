@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import gameConfigs from './gameConfigs';
 import Game from './game';
-import Settings from './components/Settings';
 import GameMenu from './components/GameMenu';
+import Settings from './components/settings';
+import { getHighScore, recordHighScore } from './utils';
 
 const App = () => {
   const [game, setGame] = useState<Game>();
   const [paused, setPaused] = useState(false);
   const [isDead, setIsDead] = useState(false);
+  const [score, setScore] = useState<number>();
+  const [highScore, setHighScore] = useState<number>();
 
   const gameCanvas = useRef<HTMLCanvasElement | null>(null);
   const backgroundCanvas = useRef<HTMLCanvasElement | null>(null);
@@ -15,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     if (isDead) {
-      return
+      return;
     }
 
     let game: Game | null = null;
@@ -36,21 +39,44 @@ const App = () => {
     }
 
     return () => game?.stop();
-  }, [gameCanvas.current, backgroundCanvas?.current, uiCanvas?.current, isDead]);
+  }, [
+    gameCanvas.current,
+    backgroundCanvas?.current,
+    uiCanvas?.current,
+    isDead,
+  ]);
 
   useEffect(() => {
     if (game) {
-      game.addListener('onPaused', setPaused);
-      game.addListener('onKilled', () => setIsDead(true));
-      game.addListener("onRestart", restart)
+      game.addListener('onPaused', onPaused);
+      game.addListener('onKilled', onKilled);
+      game.addListener('onRestart', restart);
     }
   }, [game]);
+
+  useEffect(() => {
+    getHighScore().then((value) => setHighScore(value));
+  }, []);
+
+  const onPaused = (pause: boolean, score: number) => {
+    setPaused(pause);
+    setScore(score);
+  };
+
+  const onKilled = (score: number) => {
+    setScore(score);
+    if (!highScore || score > highScore) {
+      setHighScore(score);
+      recordHighScore(score);
+    }
+    setIsDead(true);
+  };
 
   const continueGame = () => game?.togglePause(false);
 
   const restart = () => {
-    setIsDead(true)
-    setTimeout(() => setIsDead(false))
+    setIsDead(true);
+    setTimeout(() => setIsDead(false));
     continueGame();
   };
 
@@ -76,6 +102,8 @@ const App = () => {
           className="canvas ui"
         />
         <GameMenu
+          score={score}
+          highScore={highScore}
           paused={paused}
           isDead={isDead}
           restartGame={restart}

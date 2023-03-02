@@ -21,6 +21,10 @@ const getChunkIndex = (x: number, chunkWidth: number) => ~~(x / chunkWidth);
 const isEntityExist = (entity: { hp: number; deleted: boolean }) =>
   !entity.deleted && entity.hp > 0;
 
+type Game = {
+  getScore: () => number;
+} & Listeners<GameListeners>
+
 class Battlefield {
   private startTime = 0;
   private prevGameSec = -1;
@@ -44,7 +48,7 @@ class Battlefield {
   private ship: SpaceShip | null = null;
 
   constructor(
-    private game: Listeners<GameListeners>,
+    private game: Game,
     private ctx: GameContext,
     private gWidth: number,
     private gHeight: number,
@@ -178,7 +182,7 @@ class Battlefield {
             this.health?.draw(this.ctx.ui);
             bullet.deleted = true;
             if (this.ship.health <= 0) {
-              this.game.runListeners("onKilled")
+              this.game.runListeners("onKilled", this.game.getScore())
               this.ship.killed = true;
             }
           }

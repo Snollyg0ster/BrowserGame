@@ -46,6 +46,8 @@ body {
 }
 
 .menu-container {
+  position: relative;
+
   flex: 1;
   display: flex;
   align-items: center;
@@ -89,5 +91,47 @@ body {
 
   &:hover {
     background: rgba(255, 255, 255, 0.214);
+  }
+}
+
+.score-container {
+  position: absolute;
+  top: 50px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+$score-title-font-size: 18px;
+
+.score-title {
+  font-weight: bold;
+  font-size: $score-title-font-size;
+  padding-bottom: 10px;
+
+  &__new-high-score {
+    animation: 1s infinite pulsate alternate;
+    padding-top: 30px;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    color: yellow;
+    font-size: $score-title-font-size;
+  }
+  25% {
+    color: rgb(255, 213, 0);
+  }
+  50% {
+    color: orange;
+  }
+  75% {
+    color: rgb(255, 81, 0);
+  }
+  100% {
+    color: rgb(255, 17, 0);
+    font-size: $score-title-font-size + 4;
   }
 }

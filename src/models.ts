@@ -16,7 +16,7 @@ export interface SettingsProps {
 }
 
 export type GameListeners = {
-  onPaused: (paused: boolean) => void;
-  onKilled: () => void;
+  onPaused: (paused: boolean, score: number) => void;
+  onKilled: (score: number) => void;
   onRestart: () => void;
 }

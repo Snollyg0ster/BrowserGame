@@ -3,7 +3,7 @@ export const getHighScore = async () => {
   return highScore ? +highScore : 0
 }
 
-export const setHighScore =  async (highScore: number) => {
+export const recordHighScore =  async (highScore: number) => {
   localStorage.setItem("highScore", `${highScore}`)
 }
 

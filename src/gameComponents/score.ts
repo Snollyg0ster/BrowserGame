@@ -11,6 +11,10 @@ class Score {
     this.score += value;
   }
 
+  get scoreValue() {
+    return this.score;
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     const scoreBarHeight = this.size / 2;
     const font = `${this.size / 2}px Roboto`;
