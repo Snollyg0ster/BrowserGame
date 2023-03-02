@@ -3,13 +3,13 @@ import { clsx } from '../../utils';
 
 interface Props {
   paused: boolean;
-  togglePause?: () => void;
+  continueGame: () => void;
   isDead: boolean;
   restartGame: () => void;
 }
 
 const GameMenu = (props: Props) => {
-  const { paused, togglePause, isDead, restartGame } = props;
+  const { paused, continueGame, isDead, restartGame } = props;
 
   const [zIndex, setZIndex] = useState(paused);
 
@@ -37,7 +37,7 @@ const GameMenu = (props: Props) => {
         )}
         <div className="buttons-container">
           {!isDead && (
-            <div className="menu-button" onClick={togglePause}>
+            <div className="menu-button" onClick={continueGame}>
               continue
             </div>
           )}

@@ -8,7 +8,7 @@ import Score from './gameComponents/score';
 import HeartHealth from './gameComponents/heartHealth';
 import { GameContext, GameListeners } from './models';
 import Background from './gameComponents/background';
-import { Listeners } from './utils';
+import { clearCanvas, Listeners } from './utils';
 
 const gameLevels: BattleFieldProps['atackPeriods'] = [[1, 5], [10, 15], [20]];
 
@@ -30,10 +30,14 @@ class Game extends Listeners<GameListeners> {
   private delay = 0;
   private startPauseTime = 0;
   private paused = false;
+  private gamePaused = false;
 
   constructor(private ctx: GameContext) {
     super();
     
+    Object.values(ctx).forEach(clearCanvas)
+    this.delay = performance.now();
+
     this.battlefield = new Battlefield(this, ctx, ...this.gsize, {
       atackPeriods: gameLevels,
     });
@@ -47,25 +51,29 @@ class Game extends Listeners<GameListeners> {
     this.battlefield.addShip(this.ship);
 
     this.pressed = this.input.getPressed();
-    this.input.addListener("KeyR", () => this.runListeners("onRestart"))
+    this.input.addAliasClickListener("pause", () => {
+      this.paused = !this.paused;
+      // this.runListeners("onPaused", this.paused);
+    })
+    this.input.addAliasClickListener("restart", () => this.runListeners("onRestart"))
 
     this.gameLoop(0);
   }
 
   private gameLoop (time: number) {
     this.pressed = this.input.getPressed();
-    if (!this.pressed.pause) {
-      if (this.paused) {
+    if (!this.paused) {
+      if (this.gamePaused) {
         this.delay += time - this.startPauseTime;
-        this.paused = false;
+        this.gamePaused = false;
         this.runListeners("onPaused", false);
       }
       const gameTime = time - this.delay;
       this.gameIteration(gameTime, time - this.prevTime);
     } else {
-      if (!this.paused) {
+      if (!this.gamePaused) {
         this.startPauseTime = time;
-        this.paused = true;
+        this.gamePaused = true;
         this.runListeners("onPaused", true);
       }
     }
@@ -96,8 +104,9 @@ class Game extends Listeners<GameListeners> {
     this.input.stopListening();
   }
 
-  togglePause() {
-    this.input.syntheticPress("Escape")
+  togglePause(pause?: boolean) {
+    const isPaused = pause === undefined ? !this.paused : pause;
+    this.paused = isPaused;
   }
 }
 

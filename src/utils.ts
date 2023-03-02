@@ -7,7 +7,6 @@ export const setHighScore =  async (highScore: number) => {
   localStorage.setItem("highScore", `${highScore}`)
 }
 
-
 export type Classname = string | Record<string, boolean>;
 
 export const clsx = (...classnames: (Classname | undefined | null)[]) =>
@@ -54,4 +53,9 @@ export class Listeners<T extends Record<string | symbol | number, (...params: an
   deleteListener<K extends keyof T>(key: K, listener: T[K]) {
     this.listeners[key] && this.listeners[key]?.delete(listener);
   }
+}
+
+export const clearCanvas = (ctx: CanvasRenderingContext2D) => {
+  const {width, height} = ctx.canvas;
+  ctx.clearRect(0, 0, width, height);
 }

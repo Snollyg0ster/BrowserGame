@@ -1,14 +1,8 @@
 import { Listeners } from './../utils';
-class GameInput extends Listeners<Record<string, () => void>>{
-  private left = ['KeyA', 'ArrowLeft'];
-  private right = ['KeyD', 'ArrowRight'];
-  private up = ['KeyW', 'ArrowUp'];
-  private down = ['KeyS', 'ArrowDown'];
-  private stop = ['KeyP', 'Escape'];
-  private shootKey = ['Space'];
+class Input extends Listeners<Record<string, () => void>> {
   private pressed: Record<string, boolean> = {};
   private clickNum: Record<string, number> = {};
-  stopListening: () => void;
+  private listenersRemover: () => void;
 
   constructor() {
     super();
@@ -19,46 +13,72 @@ class GameInput extends Listeners<Record<string, () => void>>{
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
-    this.stopListening = () => {
+    this.listenersRemover = () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onKeyUp);
-    }
+    };
   }
 
   private onKeyDown(key: string | KeyboardEvent) {
-    const code = typeof key === "string" ? key : key.code;
-    this.pressed[code] = true
+    const code = typeof key === 'string' ? key : key.code;
+    this.pressed[code] = true;
   }
 
   private onKeyUp(key: string | KeyboardEvent) {
-    const code = typeof key === "string" ? key : key.code;
-    delete this.pressed[code]
+    const code = typeof key === 'string' ? key : key.code;
+    delete this.pressed[code];
     code in this.clickNum ? this.clickNum[code]++ : (this.clickNum[code] = 1);
     this.runListeners(code);
   }
 
-  private isPressed(keys: string[]) {
-    return keys.some(key => this.pressed[key]);
-  }
-
-  private getClickNum(keys: string[]) {
+  protected getClickNum(keys: string[]) {
     return keys.reduce((num, key) => num + (this.clickNum[key] || 0), 0);
   }
 
-  getPressed() {
-    return {
-      right: this.isPressed(this.right),
-      left: this.isPressed(this.left),
-      up: this.isPressed(this.up),
-      down: this.isPressed(this.down),
-      shootKey: this.isPressed(this.shootKey),
-      pause: !!(this.getClickNum(this.stop) % 2),
-    }
+  protected isPressed(keys: string[]) {
+    return keys.some((key) => this.pressed[key]);
   }
 
   syntheticPress(code: string) {
-    this.onKeyDown(code)
-    this.onKeyUp(code)
+    this.onKeyDown(code);
+    this.onKeyUp(code);
+  }
+
+  stopListening() {
+    this.listenersRemover();
+  }
+}
+
+class GameInput extends Input {
+  private aliases = {
+    left: ['KeyA', 'ArrowLeft'],
+    right: ['KeyD', 'ArrowRight'],
+    up: ['KeyW', 'ArrowUp'],
+    down: ['KeyS', 'ArrowDown'],
+    pause: ['KeyP', 'Escape'],
+    shootKey: ['Space'],
+    restart: ['KeyR'],
+  };
+
+  constructor() {
+    super();
+  }
+
+  addAliasClickListener(
+    alias: keyof typeof this.aliases,
+    listener: () => void
+  ) {
+    this.aliases[alias].forEach((key) => this.addListener(key, listener));
+  }
+
+  getPressed() {
+    return Object.entries(this.aliases).reduce(
+      (aliases, [alias, keys]) => ({
+        ...aliases,
+        [alias]: this.isPressed(keys),
+      }),
+      {}
+    ) as Record<keyof typeof this.aliases, boolean>;
   }
 }
 
