@@ -7,6 +7,7 @@ import SpaceShip from './ship';
 import HeartHealth from './heartHealth';
 import { GameContext, GameListeners } from '../models';
 import { Listeners } from '../utils';
+import { Explosion } from './explosion';
 
 const secondsFromStart = (start: number, current: number) =>
   Math.round((current - start) / 1000);
@@ -42,6 +43,8 @@ class Battlefield {
   private currentPeriod = 0;
   private atackPeriods: ([number, number] | [number])[] = [];
   private isAtacked = false;
+
+  private explosions: Explosion[] = [];
 
   private score: Score | null = null;
   private health: HeartHealth | null = null;
@@ -149,12 +152,14 @@ class Battlefield {
       (topInvaderY && (topInvaderY >= gap || isTopInvaderDeleted))
     ) {
       const y = isFirstInvaderInPeriod ? 0 : topInvaderY! - gap;
+      const invaderConfig = getRandomEnemyConfig();
       const newInvader = new Invader(
         this.ctx.game,
         this.gHeight,
         this.invadersSpeed,
+        invaderConfig.type,
         this,
-        getRandomEnemyConfig()
+        invaderConfig
       );
       const x = Math.round(
         Math.random() * (this.gWidth - newInvader.size.width)
@@ -219,6 +224,20 @@ class Battlefield {
         if (invader.hp <= 0) {
           this.score?.increaseScore(invader.reward);
           this.score?.draw(this.ctx.ui);
+          const x = invader.rect.x + invader.rect.width / 2;
+          const y = invader.rect.y + invader.rect.height / 2;
+          let newExplosion: Explosion;
+          
+          if (invader.type === "bigInvader") {
+            newExplosion = new Explosion(ctx, x, y, {
+              maxSpeed: 250,
+              trianglesNum: 25 ** 2
+            });
+          } else {
+            newExplosion = new Explosion(ctx, x, y);
+          }
+          
+          this.explosions.push(newExplosion);
         }
         return isEntityExist(invader);
       })
@@ -227,9 +246,15 @@ class Battlefield {
     this.invaders = updatedInvaders;
   }
 
+  private updateExplosions(deltaTime: number) {
+    this.explosions = this.explosions.filter(explosion => explosion.exist);
+    this.explosions.forEach(explosion => explosion.draw(deltaTime))
+  }
+
   update(time: number, deltaTime: number) {
     this.gameSec = secondsFromStart(this.startTime, time);
     this.isAtackGoing();
+    this.updateExplosions(deltaTime);
     this.calculateNewInvader();
     this.updateInvaders(this.ctx.game, time, deltaTime);
     this.updateBullets(this.ctx.game, deltaTime);

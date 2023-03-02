@@ -1,7 +1,7 @@
 import Battlefield from './battlefield';
 import Gun from './guns';
 import HealthBar from './healthBar';
-import { InvaderProps, Color } from './models';
+import { InvaderProps, Color, InvaderTypes } from './models';
 import { getGunsFromProps } from './utils';
 
 class Invader {
@@ -22,6 +22,7 @@ class Invader {
     private ctx: CanvasRenderingContext2D,
     private gHeight: number,
     private speed: number,
+    public type: InvaderTypes,
     battlefield: Battlefield,
     options?: InvaderProps
   ) {

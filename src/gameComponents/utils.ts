@@ -17,7 +17,7 @@ export const randomRGB = (minIntensity: number, maxIntensity: number) => {
 };
 
 export const rgbToRgbaString = (color: number[], alpha = 255) =>
-  color.length > 2 ? `rgba(${color.slice(0, 4).join(', ')}, ${alpha})` : null;
+  color.length > 2 ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})` : null;
 
 export const randomRgbaString = (
   minIntensity: number,

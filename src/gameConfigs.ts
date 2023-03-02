@@ -7,12 +7,14 @@ export default {
   size: [700, 700] as [number, number],
   invaderTypes: {
     littleInvader: {
+      type: "littleInvader",
       height: 60,
       width: 60,
       image: [littleInvaderImage, 60, 60],
       hp: 5,
     },
     bigInvader: {
+      type: "bigInvader",
       reward: 22500,
       height: 100,
       width: 100,

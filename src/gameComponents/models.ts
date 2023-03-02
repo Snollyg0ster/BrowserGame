@@ -56,13 +56,15 @@ export type InvaderProps = Partial<{
     | [img: string, width: number, height: number]
     | [img: string, width: number]
     | [img: string];
-  height: number;
-  width: number;
   hp: number;
   guns: GunScheme[];
   color: string;
   reward: number;
-}>;
+}> & {
+  type: InvaderTypes;
+  height: number;
+  width: number;
+};
 
 export type InvaderTypes = 'littleInvader' | 'bigInvader';
 
