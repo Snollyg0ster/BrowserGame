@@ -2,7 +2,7 @@ import { getCanvasTextSize } from './utils';
 
 class Score {
   private score = 0;
-  private marginRight = 30;
+  private marginRight = 80;
   private y = 2;
 
   constructor(private gWidth: number, private size: number) {}

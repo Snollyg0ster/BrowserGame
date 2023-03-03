@@ -72,12 +72,10 @@ const App = () => {
     setIsDead(true);
   };
 
-  const continueGame = () => game?.togglePause(false);
-
   const restart = () => {
     setIsDead(true);
     setTimeout(() => setIsDead(false));
-    continueGame();
+    game?.togglePause(false);
   };
 
   return (
@@ -107,7 +105,7 @@ const App = () => {
           paused={paused}
           isDead={isDead}
           restartGame={restart}
-          continueGame={continueGame}
+          togglePause={game?.togglePause.bind(game)}
         />
       </div>
       <Settings settings={game?.getSettings()} />
