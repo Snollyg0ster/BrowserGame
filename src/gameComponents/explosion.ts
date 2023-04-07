@@ -1,42 +1,5 @@
-import { Coord, Polygon } from "./models";
-import { copyToInstance } from "./utils";
-
-export type RGBA = [red: number, green: number, blue: number, alpha: number];
-export type RGB = [red: number, green: number, blue: number];
-
-export const interpolateColor = <T extends RGB | RGBA>(first: T, second: T, percentage: number) => {
-  const color = [];
-  for (let i = 0; i < first.length; i++) {
-    color[i] = Math.round((first[i] * (100 - percentage) + second[i] * percentage) / 100);
-  }
-  return color as T;
-}
-
-
-export const rgbaToString = (color: RGBA) => //@ts-ignore
-  `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3].toFixed(2)})`
-
-export const getDistance = ([x1, y1]: number[], [x2, y2]: number[]) => {
-  return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
-};
-
-export const degreeToRad = (degree: number) => (degree * Math.PI) / 180;
-
-export const rotateDot = (
-  dot: Coord,
-  degree: number,
-  axis: Coord = { x: 0, y: 0 }
-) => {
-  if (!degree) return dot; //no angle, no need to rotate :)
-  const angle = degreeToRad(degree);
-  let relativeToAxis = { x: dot.x - axis.x, y: dot.y - axis.y };
-  const { x, y } = relativeToAxis;
-
-  const rotatedX = Math.cos(angle) * x - Math.sin(angle) * y;
-  const rotatedY = Math.sin(angle) * x + Math.cos(angle) * y;
-
-  return { x: rotatedX + axis.x, y: rotatedY + axis.y };
-};
+import { Coord, Polygon, RGB, RGBA } from "./models";
+import { copyToInstance, getDistance, interpolateColor, rgbaToString, rotateDot } from "./utils";
 
 export const equilateralTriangle = (
   center: Coord,

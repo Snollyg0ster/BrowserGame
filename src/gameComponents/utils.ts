@@ -1,4 +1,4 @@
-import { GunScheme, Rect, Coord, Polygon } from './models';
+import { GunScheme, Rect, Coord, Polygon, RGBA } from './models';
 import gameConfig from '../gameConfigs';
 import Battlefield from './battlefield';
 import { NestedObjectExtractor } from './utilityTypes';
@@ -120,3 +120,23 @@ export const rotatePolygon = (shape: Polygon, angle: number): Polygon => ({
   ...shape,
   coords: shape.coords.map((coord) => rotateDot(coord, angle, shape.center)),
 });
+
+
+
+export const interpolateColor = <T extends RGB | RGBA>(first: T, second: T, percentage: number) => {
+  const color = [];
+  for (let i = 0; i < first.length; i++) {
+    color[i] = Math.round((first[i] * (100 - percentage) + second[i] * percentage) / 100);
+  }
+  return color as T;
+}
+
+
+export const rgbaToString = (color: RGBA) => //@ts-ignore
+  `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3].toFixed(2)})`
+
+export const getDistance = ([x1, y1]: number[], [x2, y2]: number[]) => {
+  return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+};
+
+export const degreeToRad = (degree: number) => (degree * Math.PI) / 180;
